@@ -1,0 +1,6 @@
+{
+  "name": "Blood Group Analyzer",
+  "description": "Analyze blood type genetics and transfusion compatibility. This app helps visualize how parents' alleles combine to predict children's potential blood types based on Mendelian inheritance.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

@@ -1,0 +1,91 @@
+import React, { createContext, useState, useContext, useMemo, FC, useEffect } from 'react';
+
+// Define a type for our translations object
+type Translations = Record<string, any>;
+interface LanguageFiles {
+    en: Translations;
+    fa: Translations;
+}
+
+type Language = 'en' | 'fa';
+
+interface LanguageContextType {
+    language: Language;
+    setLanguage: (language: Language) => void;
+    t: (key: string, options?: Record<string, string | number>) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+    const [language, setLanguage] = useState<Language>('en');
+    const [translations, setTranslations] = useState<LanguageFiles | null>(null);
+
+    useEffect(() => {
+        const loadTranslations = async () => {
+            try {
+                const enResponse = await fetch('./i18n/locales/en.json');
+                const faResponse = await fetch('./i18n/locales/fa.json');
+                
+                if (!enResponse.ok || !faResponse.ok) {
+                    throw new Error('Failed to fetch translation files');
+                }
+
+                const en = await enResponse.json();
+                const fa = await faResponse.json();
+
+                setTranslations({ en, fa });
+            } catch (error) {
+                console.error("Failed to load translations:", error);
+                // In case of error, you might want to set some default minimal translations
+                // or render an error message to the user. For now, it will hang on loading.
+            }
+        };
+
+        loadTranslations();
+    }, []);
+
+    const t = (key: string, options?: Record<string, string | number>): string => {
+        if (!translations) {
+            return key; // Return key as fallback during loading
+        }
+        
+        const langFile = translations[language];
+        let text: string = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), langFile);
+
+        if (text === undefined || text === null) {
+            // Fallback to English if translation is missing in the current language
+            const fallbackLangFile = translations.en;
+            text = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), fallbackLangFile) || key;
+        }
+
+        if (text && options) {
+            Object.keys(options).forEach((k) => {
+                text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
+            });
+        }
+        
+        return text || key;
+    };
+    
+    const value = useMemo(() => ({ language, setLanguage, t }), [language, translations]);
+
+    // Do not render children until translations are loaded to prevent showing keys
+    if (!translations) {
+        return null;
+    }
+
+    return (
+        <LanguageContext.Provider value={value}>
+            {children}
+        </LanguageContext.Provider>
+    );
+};
+
+export const useLanguage = () => {
+    const context = useContext(LanguageContext);
+    if (context === undefined) {
+        throw new Error('useLanguage must be used within a LanguageProvider');
+    }
+    return context;
+};

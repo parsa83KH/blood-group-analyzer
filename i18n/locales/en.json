@@ -1,0 +1,182 @@
+
+{
+  "appTitle": "Blood Group Analyzer",
+  "appTagline": "Analyze blood type genetics and transfusion compatibility",
+  "footerRights": "All Rights Reserved.",
+  "unknown": "Unknown",
+  "father": "Father",
+  "mother": "Mother",
+  "child": "Child",
+  "addMember": "Add Child",
+  "removeMember": "Remove this member",
+  "abo": "ABO",
+  "rh": "RH",
+  "aboHelper": "Phenotype (e.g. A) or Genotype (e.g. AA)",
+  "rhHelper": "Phenotype (e.g. +) or Genotype (e.g. DD)",
+  "analyze": "Analyze Blood Group",
+  "analyzing": "Analyzing...",
+  "loading": "Performing Genetic Analysis...",
+  "memberAnalysisTitle": "{{member}} Analysis",
+  "howItWorks": {
+    "title": "How It Works",
+    "step1": {
+      "title": "1. Provide Inputs",
+      "desc": "Enter the known blood types for the father, mother, and any children or if you don't know a person's blood type, you can leave it unknown. If you want the calculations for only one type of blood type (e.g., ABO only), leave the other blood type entries (i.e., RH) completely unknown; Use either phenotypes (like A+) or genotypes (like AO/Dd)."
+    },
+    "step2": {
+      "title": "2. Calculate Odds",
+      "desc": "We cross-reference all valid genetic combinations to calculate the precise probability of each possible blood type for every member. For example, you may not have any information about one or more individuals and you want to obtain complete information about them, or you may know the phenotype of an individual and you want to see what their genotype is.",
+      "note": "Note: Calculations are based on standard Mendelian inheritance and do not account for rare mutations or other genetic exceptions."
+    },
+    "step3": {
+      "title": "3. Understand Transfusions",
+      "desc": "The analysis also shows who can donate to whom. This is critical because an incompatible transfusion can trigger a dangerous immune response based on antigens on red blood cells."
+    },
+    "punnett": {
+      "title": "Example: Punnett Square",
+      "desc": "This tool helps visualize how parents' alleles combine. For instance, if a child has Type O blood, they must have inherited an 'O' allele from each parent. Therefore, a Type 'A' parent of a Type 'O' child must have the genotype AO, not AA.",
+      "parent1": "Parent 1",
+      "parent2": "Parent 2",
+      "results": "Possible Results"
+    },
+    "transfusionDiagram": {
+      "title": "Transfusion Rules Example",
+      "desc": "A person with Type A blood has 'A' antigens on their red blood cells. Their immune system will attack 'B' antigens. Therefore, they can donate to other 'A' types and 'AB' types (who have both antigens), but not 'B' or 'O' types.",
+      "donor": "Donor",
+      "recipient": "Recipient",
+      "rhNote": "Note: Rh-negative blood can be given to Rh-positive recipients, but not vice-versa."
+    },
+    "formulas": {
+      "title": "The Science Behind the Calculations",
+      "categoryHeader": "Formula Category",
+      "formulaHeader": "Mathematical Formula",
+      "exampleHeader": "Practical Example",
+      "categories": {
+        "genoToPheno": "Genotype to Phenotype",
+        "rhInheritance": "RH Inheritance",
+        "dAlleleDominance": "D Allele Dominance",
+        "mendelianInheritance": "Mendelian Inheritance",
+        "genoProbability": "Genotype Probability",
+        "phenoProbability": "Phenotype Probability",
+        "normalization": "Normalization",
+        "hybridProbability": "Hybrid Probability",
+        "comboValidity": "Combination Validity",
+        "transfusion": "Transfusion Compatibility",
+        "cartesian": "Cartesian Product"
+      },
+      "terms": {
+        "phenotype": "Phenotype",
+        "genotype": "Genotype",
+        "child": "Child",
+        "children": "Children",
+        "parents": "Parents",
+        "allele": "Allele",
+        "count": "Count",
+        "total": "Total",
+        "compatible": "Compatible",
+        "bloodTypes": "Blood Types",
+        "valid": "Valid",
+        "possible": "possible",
+        "calculated": "calculated"
+      },
+      "conditions": {
+        "genoToPheno": "genotypeᵢ if ƒ(genotypeᵢ)=phenotypeⱼ",
+        "dPresent": "+ if D present",
+        "onlyD": "- if only d"
+      },
+      "examples": {
+        "genoToPheno": "Genotype 'AO' → Phenotype 'A'\n(A is dominant over O)",
+        "rhInheritance": "Parents: Dd × Dd →\nChildren: DD, Dd, dd\n(25%, 50%, 25%)",
+        "dAlleleDominance": "Genotype 'Dd' → Phenotype '+'\n(D is dominant)",
+        "mendelianInheritance": "Parents: AO × BO →\nChildren:\n1/4 AB, 1/4 AO,\n1/4 BO, 1/4 OO",
+        "genoProbability": "From 100 combinations:\n25 AA, 50 AO, 25 OO →\nP(AA) = 25/100 = 0.25",
+        "phenoProbability": "P(A) = P(AA) + P(AO)\n= 0.25 + 0.50 = 0.75",
+        "normalization": "Raw: {AA:0.3, AO:0.6, OO:0.2}\nSum=1.1 →\nNormalized: {AA:0.27, ...}",
+        "hybridProbability": "P(A+) = P(A) × P(+)\n= 0.40 × 0.85 = 0.34",
+        "comboValidity": "Parents AA × BB\ncannot produce Child O\n→ Invalid",
+        "transfusion": "Person is 60% A+, 40% A-\nCan receive from O- with\nP(Compatible) = 1.0",
+        "cartesian": "ABO={A,B,AB,O} × RH={+,-}\n= {A+,A-,B+,B-,AB+,AB-,O+,O-}"
+      }
+    }
+  },
+  "charts": {
+    "aboPheno": "ABO Phenotype Probabilities",
+    "aboGeno": "ABO Genotype Probabilities",
+    "rhPheno": "RH Phenotype Probabilities",
+    "rhGeno": "RH Genotype Probabilities",
+    "hybridGeno": "Full Genotype Probabilities",
+    "hybridPheno": "Full Blood Type Probabilities"
+  },
+  "transfusion": {
+    "title": "Transfusion Compatibility",
+    "receive": "Can Receive From",
+    "donate": "Can Donate To",
+    "noDonors": "No compatible donors.",
+    "noRecipients": "No compatible recipients.",
+    "insufficientData": "Insufficient data for transfusion analysis.",
+    "summary": {
+      "single": "This person's blood type is {{type}}.",
+      "mostLikely": "Most likely blood type is {{type}} ({{probability}}% probability).",
+      "insufficient": "Not enough information for a detailed transfusion analysis.",
+      "invalid": "Cannot determine compatibility due to invalid family data.",
+      "noteABO": "Note: Compatibility is based on ABO system only.",
+      "noteRH": "Note: Compatibility is based on RH system only."
+    }
+  },
+  "error": {
+    "title": "Analysis Failed",
+    "unexpected": "An unexpected error occurred during analysis. Please check your inputs and try again.",
+    "unexpectedDetailed": "Error analyzing blood types: {{error}}",
+    "allUnknown": "Please enter at least one blood type for analysis.",
+    "entities": {
+      "child_single": "Child ({{number}})",
+      "children_list": "Children ({{list}})"
+    },
+    "abo": {
+      "invalidInput": "ABO Error: Invalid blood type entered. Please check the inputs.",
+      "invalidInputDetailed": "ABO Error: Invalid blood type. Must be one of phenotypes such as: (A), (B), (AB), (O), or their genotypes such as: (AA), (AO), (BB), (BO), (AB), (OO) or be Unknown.",
+      "noInput": "Please enter at least one ABO blood type for analysis.",
+      "impossible": "ABO Error: The provided family blood types are not genetically possible.",
+      "noValidCombinations": "ABO Error: No valid genetic combinations found for the given family blood types.",
+      "oChild_impossible": "ABO Error: {{child_entity}} with blood type (O) is impossible. With parents ({{father}}) and ({{mother}}), at least one parent cannot provide the required 'O' allele.",
+      "oChild_impossible_father": "ABO Error: {{child_entity}} with blood type (O) is impossible. The father with input ({{father}}) cannot provide the required 'O' allele.",
+      "oChild_impossible_mother": "ABO Error: {{child_entity}} with blood type (O) is impossible. The mother with input ({{mother}}) cannot provide the required 'O' allele.",
+      "oChild_impossible_both": "ABO Error: {{child_entity}} with blood type (O) is impossible. Neither the father ({{father}}) nor the mother ({{mother}}) can provide the required 'O' allele.",
+      "aChild_impossible": "ABO Error: {{child_entity}} with blood type (A) is impossible. Neither parent ({{father}}, {{mother}}) can provide the required 'A' allele.",
+      "bChild_impossible": "ABO Error: {{child_entity}} with blood type (B) is impossible. Neither parent ({{father}}, {{mother}}) can provide the required 'B' allele.",
+      "abChild_impossible": "ABO Error: {{child_entity}} with blood type (AB) is impossible. The combination of parents ({{father}}, {{mother}}) cannot provide both 'A' and 'B' alleles."
+    },
+    "rh": {
+      "invalidInput": "RH Error: Invalid Rh factor entered. Please check the inputs.",
+      "invalidInputDetailed": "RH Error: Invalid blood type. Must be one of phenotypes such as: (+), (-) or genotypes such as: (DD), (Dd), (dd) or be Unknown.",
+      "noInput": "Please enter at least one RH factor for analysis.",
+      "impossible": "RH Error: The provided family Rh factors are not genetically possible.",
+      "genericIncompatibility": "RH Error: The children's RH blood types are genetically incompatible with the parents' blood types based on the laws of inheritance.",
+      "negative_child_impossible_father": "RH Error: {{child_entity}} with RH- blood is impossible. The father with input ({{parent_value}}) cannot provide the required 'd' allele.",
+      "negative_child_impossible_mother": "RH Error: {{child_entity}} with RH- blood is impossible. The mother with input ({{parent_value}}) cannot provide the required 'd' allele.",
+      "negative_child_impossible_both": "RH Error: {{child_entity}} with RH- blood is impossible. Both parents ({{father}}, {{mother}}) can only provide 'D' alleles.",
+      "positive_child_impossible": "RH Error: {{child_entity}} with RH+ blood is impossible. Both parents ({{father}}, {{mother}}) can only provide 'd' alleles.",
+      "DD_child_impossible": "RH Error: {{child_entity}} with genotype (DD) is impossible, as a 'D' allele cannot be provided by both parents.",
+      "Dd_child_impossible_DD_parents": "RH Error: {{child_entity}} with genotype (Dd) is impossible from two (DD) parents, who can only create (DD) offspring."
+    }
+  },
+  "aiAssistant": {
+    "title": "Ask Geno, Your AI Blood Expert",
+    "placeholder": "Ask any question...",
+    "send": "Send",
+    "thinking": "Geno is thinking...",
+    "error": "Sorry, I couldn't process that. Please try again.",
+    "initialMessage": "Hello! I'm Geno, your AI assistant, specialized in blood genetics and this application's functions. How can I help you today?"
+  },
+  "aiSystemInstruction": {
+    "base": "You are an expert AI assistant embedded in the 'Blood Group Analyzer' web application. Your name is 'Geno'. Your purpose is to help users understand blood genetics, transfusion compatibility, and how to use this specific application.\n\n**About the 'Blood Group Analyzer' App:**\n- **Core Functionality:** {{coreFunctionality}}\n- **Inputs:** {{inputs}}\n- **Outputs:** {{outputs}}\n- **'How It Works' Section:** {{howItWorks}}\n- **Technology:** {{technology}}\n- **Languages:** {{languages}}\n\n**Your Persona & Guidelines:**\n- {{persona}}\n- {{safety}}\n- **Language:** Respond in the language the user asks the question in. The current user language is: {{language}}.",
+    "coreFunctionality": "It's a tool for genetic analysis of blood types (ABO and RH systems). Users can input the blood types of family members (father, mother, children) to see possible genetic combinations, calculate probabilities for each person's genotype and phenotype, and analyze blood transfusion compatibility.",
+    "inputs": "Users provide blood types as phenotypes (e.g., A, B, O, AB, +, -) or genotypes (e.g., AA, AO, BO, DD, Dd). 'Unknown' is a valid input if a blood type is not known.",
+    "outputs": "The app displays detailed results for each family member, including: ABO & RH phenotype/genotype probabilities (shown in tables and pie charts), full blood type probabilities (e.g., A+, O-), and transfusion compatibility analysis (who they can donate to and receive from).",
+    "howItWorks": "The app has an educational section that explains Mendelian inheritance using Punnett squares, transfusion rules, and the mathematical formulas behind the calculations.",
+    "technology": "It's a modern web app built with React, TypeScript, and features a dynamic 3D background using Three.js to visualize blood cells and DNA strands.",
+    "languages": "The app supports English (en) and Persian (fa).",
+    "persona": "Be an Expert: Answer questions accurately about blood genetics, inheritance patterns, and transfusion science. Be App-Aware: If a user asks about the app ('how do I add a child?', 'what does the pie chart show?'), use your knowledge of the app's features to answer them. Be Friendly and Encouraging: Use a helpful and clear tone. Keep it Concise: Provide direct answers without unnecessary fluff. Handle Ambiguity: If a question is unclear, ask for clarification.",
+    "safety": "Safety: Do not provide medical advice. If a user asks for a diagnosis or medical recommendation, gently decline and advise them to consult a healthcare professional. For example: \"As an AI, I cannot provide medical advice. Please consult with a doctor or a qualified healthcare provider for any medical concerns.\""
+  }
+}
