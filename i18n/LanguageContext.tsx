@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useMemo, FC, useEffect } from 'react';
 
-// Define a type for our translations object
 type Translations = Record<string, any>;
 interface LanguageFiles {
     en: Translations;
@@ -24,9 +23,10 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
     useEffect(() => {
         const loadTranslations = async () => {
             try {
-                const enResponse = await fetch('./i18n/locales/en.json');
-                const faResponse = await fetch('./i18n/locales/fa.json');
-                
+                const BASE_URL = import.meta.env.BASE_URL;
+                const enResponse = await fetch(`${BASE_URL}i18n/locales/en.json`);
+                const faResponse = await fetch(`${BASE_URL}i18n/locales/fa.json`);
+
                 if (!enResponse.ok || !faResponse.ok) {
                     throw new Error('Failed to fetch translation files');
                 }
@@ -37,8 +37,6 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
                 setTranslations({ en, fa });
             } catch (error) {
                 console.error("Failed to load translations:", error);
-                // In case of error, you might want to set some default minimal translations
-                // or render an error message to the user. For now, it will hang on loading.
             }
         };
 
@@ -47,14 +45,12 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
 
     const t = (key: string, options?: Record<string, string | number>): string => {
         if (!translations) {
-            return key; // Return key as fallback during loading
+            return key;
         }
-        
         const langFile = translations[language];
         let text: string = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), langFile);
 
         if (text === undefined || text === null) {
-            // Fallback to English if translation is missing in the current language
             const fallbackLangFile = translations.en;
             text = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), fallbackLangFile) || key;
         }
@@ -64,13 +60,11 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
                 text = text.replace(new RegExp(`{{${k}}}`, 'g'), String(options[k]));
             });
         }
-        
         return text || key;
     };
-    
+
     const value = useMemo(() => ({ language, setLanguage, t }), [language, translations]);
 
-    // Do not render children until translations are loaded to prevent showing keys
     if (!translations) {
         return null;
     }
