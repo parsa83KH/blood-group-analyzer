@@ -76,3 +76,7 @@ export interface ChatMessage {
     role: 'user' | 'model';
     text: string;
 }
+
+export interface AIAssistantHandle {
+    sendPrompt: (prompt: string) => void;
+}

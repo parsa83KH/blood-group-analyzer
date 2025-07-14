@@ -1,19 +1,25 @@
-
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
+import AskAIButton from './AskAIButton';
 
-const FormulaDisplay: React.FC = () => {
+interface FormulaDisplayProps {
+    onAskAI: (prompt: string) => void;
+}
+
+const FormulaDisplay: React.FC<FormulaDisplayProps> = ({ onAskAI }) => {
     const { t } = useLanguage();
 
-    const formulasData = [
+    const formulasData = useMemo(() => [
         {
             category: t('howItWorks.formulas.categories.genoToPheno'),
             formula: <>{t('howItWorks.formulas.terms.phenotype')} = ƒ({t('howItWorks.formulas.terms.genotype')})</>,
+            formulaString: 'Phenotype = f(Genotype)',
             example: t('howItWorks.formulas.examples.genoToPheno')
         },
         {
             category: t('howItWorks.formulas.categories.rhInheritance'),
             formula: <>{t('howItWorks.formulas.terms.children')} = &#123;D<sub>f</sub>D<sub>m</sub>, D<sub>f</sub>d<sub>m</sub>, d<sub>f</sub>D<sub>m</sub>, d<sub>f</sub>d<sub>m</sub>&#125;</>,
+            formulaString: 'Children = {DfDm, Dfdm, dfDm, dfdm}',
             example: t('howItWorks.formulas.examples.rhInheritance')
         },
         {
@@ -26,11 +32,13 @@ const FormulaDisplay: React.FC = () => {
                     <span>{t('howItWorks.formulas.conditions.onlyD')}</span>
                 </div>
             </div>,
+            formulaString: 'RH = {+ if D present, - if only d}',
             example: t('howItWorks.formulas.examples.dAlleleDominance')
         },
         {
             category: t('howItWorks.formulas.categories.mendelianInheritance'),
             formula: <>P({t('howItWorks.formulas.terms.child')}) = <span className="text-lg leading-none">&frac14;</span> &times; &sum;<sub>i,j</sub> P({t('howItWorks.formulas.terms.allele')}<sub>i</sub>) &times; P({t('howItWorks.formulas.terms.allele')}<sub>j</sub>)</>,
+            formulaString: 'P(Child) = 1/4 * sum(P(allele_i) * P(allele_j))',
             example: t('howItWorks.formulas.examples.mendelianInheritance')
         },
         {
@@ -43,6 +51,7 @@ const FormulaDisplay: React.FC = () => {
                     <span>{t('howItWorks.formulas.terms.total')}</span>
                 </div>
             </div>,
+            formulaString: 'P(Genotype_i) = Count_i / Total',
             example: t('howItWorks.formulas.examples.genoProbability')
         },
         {
@@ -55,6 +64,7 @@ const FormulaDisplay: React.FC = () => {
                 </div>
                 <span>P({t('howItWorks.formulas.terms.genotype')}<sub>i</sub>)</span>
             </div>,
+            formulaString: 'P(Phenotype_j) = sum(P(Genotype_i)) for all genotypes i that map to phenotype j',
             example: t('howItWorks.formulas.examples.phenoProbability')
         },
         {
@@ -67,16 +77,19 @@ const FormulaDisplay: React.FC = () => {
                     <span>&sum;<sub>j</sub>P({t('howItWorks.formulas.terms.genotype')}<sub>j</sub>)</span>
                 </div>
             </div>,
+            formulaString: 'P_norm(Genotype_i) = P(Genotype_i) / sum(P(Genotype_j))',
             example: t('howItWorks.formulas.examples.normalization')
         },
         {
             category: t('howItWorks.formulas.categories.hybridProbability'),
             formula: <>P(ABO<sub>i</sub> &cap; RH<sub>j</sub>) = P(ABO<sub>i</sub>) &times; P(RH<sub>j</sub>)</>,
+            formulaString: 'P(ABO_i and RH_j) = P(ABO_i) * P(RH_j)',
             example: t('howItWorks.formulas.examples.hybridProbability')
         },
         {
             category: t('howItWorks.formulas.categories.comboValidity'),
             formula: <>{t('howItWorks.formulas.terms.valid')} = &forall;{t('howItWorks.formulas.terms.child')} &exist;{t('howItWorks.formulas.terms.possible')} &isin; {t('howItWorks.formulas.terms.calculated')}</>,
+            formulaString: 'Valid = for all children, there exists a possible genotype in the calculated outcomes',
             example: t('howItWorks.formulas.examples.comboValidity')
         },
         {
@@ -89,14 +102,16 @@ const FormulaDisplay: React.FC = () => {
                 </div>
                  <span>P({t('howItWorks.formulas.terms.phenotype')}<sub>i</sub>) &times; I({t('howItWorks.formulas.terms.compatible')})</span>
             </div>,
+            formulaString: 'P(Compatible) = sum(P(Phenotype_i) * I(Compatible)) over all phenotypes i',
             example: t('howItWorks.formulas.examples.transfusion')
         },
         {
             category: t('howItWorks.formulas.categories.cartesian'),
             formula: <>{t('howItWorks.formulas.terms.bloodTypes')} = ABO &times; RH</>,
+            formulaString: 'BloodTypes = ABO x RH',
             example: t('howItWorks.formulas.examples.cartesian')
         }
-    ];
+    ], [t]);
 
     return (
         <div className="mt-10 pt-8 border-t border-gray-700/50">
@@ -114,19 +129,29 @@ const FormulaDisplay: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700/50">
-                        {formulasData.map(({ category, formula, example }, index) => (
-                            <tr key={index} className="hover:bg-brand-primary/5 transition-colors duration-200" style={{ animation: `fadeInUp 0.5s ease-out ${index * 0.05}s forwards` }}>
-                                <td className="p-3 align-top">
-                                    <span className="font-bold text-gray-300">{category}</span>
-                                </td>
-                                <td className="p-3 align-top h-full">
-                                    <code className="text-base text-rose-300 font-mono flex items-center justify-center h-full text-center" dir="ltr">{formula}</code>
-                                </td>
-                                <td className="p-3 align-top">
-                                    <pre className="text-xs text-gray-400 font-mono whitespace-pre-wrap leading-relaxed">{example}</pre>
-                                </td>
-                            </tr>
-                        ))}
+                        {formulasData.map(({ category, formula, example, formulaString }, index) => {
+                            const prompt = t('howItWorks.formulas.aiPrompt', { category: category, formula: formulaString });
+                            return (
+                                <tr key={index} className="group hover:bg-brand-primary/5 transition-colors duration-200" style={{ animation: `fadeInUp 0.5s ease-out ${index * 0.05}s forwards` }}>
+                                    <td className="p-3 align-top">
+                                        <span className="font-bold text-gray-300">{category}</span>
+                                    </td>
+                                    <td className="p-3 align-top h-full relative">
+                                        <div className="flex items-center justify-center h-full text-center min-h-[6rem]">
+                                            <code className="text-base text-rose-300 font-mono" dir="ltr">{formula}</code>
+                                        </div>
+                                        <AskAIButton
+                                            prompt={prompt}
+                                            onAsk={onAskAI}
+                                            className="absolute top-0 left-1/2 -translate-x-1/2"
+                                        />
+                                    </td>
+                                    <td className="p-3 align-top">
+                                        <pre className="text-xs text-gray-400 font-mono whitespace-pre-wrap leading-relaxed">{example}</pre>
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>

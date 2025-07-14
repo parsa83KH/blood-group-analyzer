@@ -1,22 +1,19 @@
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { GoogleGenAI } from '@google/genai';
 import { useLanguage } from '../i18n/LanguageContext';
-import { ChatMessage } from '../types';
+import { ChatMessage, AIAssistantHandle } from '../types';
 import Card from './ui/Card';
 import { PaperAirplaneIcon, SparklesIcon } from './icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-const AIAssistant: React.FC = () => {
+const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
     const { t, language } = useLanguage();
     
     const initialMessageText = t('aiAssistant.initialMessage');
     const [messages, setMessages] = useState<ChatMessage[]>([{ role: 'model', text: initialMessageText }]);
     
     useEffect(() => {
-        // This effect updates the initial greeting if the language changes
-        // AND the user has not started a conversation.
         if (messages.length === 1 && messages[0].role === 'model' && messages[0].text !== initialMessageText) {
             setMessages([{ role: 'model', text: initialMessageText }]);
         }
@@ -29,29 +26,27 @@ const AIAssistant: React.FC = () => {
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Scroll to bottom when messages change
     useEffect(() => {
         if (chatContainerRef.current) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
         }
     }, [messages]);
     
-    // Auto-resize textarea based on content
     useEffect(() => {
         const textarea = textareaRef.current;
         if (textarea) {
-            textarea.style.height = 'auto'; // Reset height
+            textarea.style.height = 'auto';
             const scrollHeight = textarea.scrollHeight;
-            textarea.style.height = `${scrollHeight}px`; // Set to content height
+            textarea.style.height = `${scrollHeight}px`;
         }
     }, [input]);
 
-    const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+    const sendPrompt = async (promptToSend: string) => {
+        if (isLoading) return;
 
-        const newUserMessage: ChatMessage = { role: 'user', text: input };
+        const newUserMessage: ChatMessage = { role: 'user', text: promptToSend };
         setMessages(prev => [...prev, newUserMessage, { role: 'model', text: '' }]);
-        setInput('');
+        setInput(''); // Clear input in case user was typing something else
         setIsLoading(true);
         setError(null);
         
@@ -71,8 +66,8 @@ const AIAssistant: React.FC = () => {
             });
             
             const responseStream = await ai.models.generateContentStream({
-                model: 'gemini-2.5-flash-preview-04-17',
-                contents: input,
+                model: 'gemini-2.5-flash',
+                contents: promptToSend,
                 config: {
                    systemInstruction: systemInstruction,
                 }
@@ -107,6 +102,15 @@ const AIAssistant: React.FC = () => {
             setIsLoading(false);
         }
     };
+    
+    const handleSend = () => {
+        if (!input.trim() || isLoading) return;
+        sendPrompt(input);
+    };
+
+    useImperativeHandle(ref, () => ({
+        sendPrompt,
+    }));
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
@@ -179,6 +183,6 @@ const AIAssistant: React.FC = () => {
             </div>
         </Card>
     );
-};
+});
 
 export default AIAssistant;

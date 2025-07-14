@@ -1,7 +1,6 @@
-
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { Person, FamilyAnalysisResult, MemberAnalysisResult } from './types';
+import { Person, FamilyAnalysisResult, MemberAnalysisResult, AIAssistantHandle } from './types';
 import BloodInputForm from './components/BloodInputForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import HowItWorks from './components/HowItWorks';
@@ -25,6 +24,8 @@ const App: React.FC = () => {
 
     const mountRef = useRef<HTMLDivElement>(null);
     const animationIdRef = useRef<number | null>(null);
+    const aiAssistantRef = useRef<AIAssistantHandle>(null);
+    const aiSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         document.documentElement.lang = language;
@@ -193,6 +194,15 @@ const App: React.FC = () => {
         }, 100);
     }, [family]);
 
+    const handleAskAI = (prompt: string) => {
+        if (aiAssistantRef.current) {
+            aiAssistantRef.current.sendPrompt(prompt);
+        }
+        if (aiSectionRef.current) {
+            aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
     return (
         <>
             <div 
@@ -210,9 +220,9 @@ const App: React.FC = () => {
             <div className="relative min-h-screen text-brand-light p-4 sm:p-6 lg:p-8">
                 <main className="max-w-7xl mx-auto">
                     <header className="relative text-center mb-12 pt-4 animate-fade-in-down">
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-400 via-red-500 to-amber-500 bg-[length:200%_auto] animate-text-gradient mb-2">
-                               {t('appTitle')}
-                           </h1>
+                       <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-400 via-red-500 to-amber-500 bg-[length:200%_auto] animate-text-gradient mb-2">
+                           {t('appTitle')}
+                       </h1>
                         <p className="text-lg text-gray-400 max-w-3xl mx-auto">
                            {t('appTagline')}
                         </p>
@@ -231,7 +241,7 @@ const App: React.FC = () => {
 
                     {showHowItWorks && (
                         <AnimatedSection className="my-12">
-                            <HowItWorks />
+                            <HowItWorks onAskAI={handleAskAI} />
                         </AnimatedSection>
                     )}
 
@@ -249,24 +259,28 @@ const App: React.FC = () => {
                             isLoading={isLoading}
                             analysisResult={analysisResult}
                             memberAnalyses={memberAnalyses}
+                            family={family}
+                            onAskAI={handleAskAI}
                         />
                     </AnimatedSection>
                     
-                    <AnimatedSection className="mt-12">
-                        <AIAssistant />
-                    </AnimatedSection>
+                    <div ref={aiSectionRef}>
+                        <AnimatedSection className="mt-12">
+                            <AIAssistant ref={aiAssistantRef} />
+                        </AnimatedSection>
+                    </div>
                 </main>
                  <footer className="text-center mt-16 text-gray-500 text-sm space-y-2">
                     <p>&copy; {new Date().getFullYear()} {t('appTitle')}. {t('footerRights')}</p>
-                    <p>developed by Parsa Khosravani</p>
+                    <p>{t('footer.developedBy')}</p>
                     <div className="flex justify-center items-center gap-6 pt-2">
                         <a href="https://github.com/parsa83KH" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition-colors">
                             <GitHubIcon className="w-5 h-5" />
-                            GitHub
+                            {t('footer.github')}
                         </a>
-                        <a href="https://t.me/Par3a83" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition-colors">
+                        <a href="https://t.me/ParsaKH_83" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition-colors">
                             <PaperAirplaneIcon className="w-5 h-5" />
-                            Telegram
+                            {t('footer.telegram')}
                         </a>
                     </div>
                 </footer>
