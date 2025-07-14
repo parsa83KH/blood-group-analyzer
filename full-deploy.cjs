@@ -31,7 +31,7 @@ function askCommitMessage(callback) {
 }
 
 if (!getChangedFiles()) {
-  console.log('✅ هیچ تغییری برای commit وجود ندارد.');
+  console.log('nothing has been changed');
   process.exit(0);
 }
 
@@ -41,5 +41,5 @@ askCommitMessage((msg) => {
   run('git push');
   run('npm run build');
   run('npm run deploy');
-  console.log('\n🚀 done!');
+  console.log('\ndone!');
 });

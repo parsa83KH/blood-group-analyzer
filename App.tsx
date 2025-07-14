@@ -6,7 +6,7 @@ import BloodInputForm from './components/BloodInputForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import HowItWorks from './components/HowItWorks';
 import LanguageSwitcher from './components/LanguageSwitcher';
-import { BloodDropIcon, QuestionMarkCircleIcon, GitHubIcon, PaperAirplaneIcon } from './components/icons';
+import { QuestionMarkCircleIcon, GitHubIcon, PaperAirplaneIcon } from './components/icons';
 import { BloodTypeCalculator } from './services/bloodCalculator';
 import { useLanguage } from './i18n/LanguageContext';
 import AnimatedSection from './components/ui/AnimatedSection';
@@ -38,7 +38,7 @@ const App: React.FC = () => {
 
         let renderer: THREE.WebGLRenderer | null = null;
         const speed = { boost: 0 };
-        const baseSpeed = 0.02;
+        const baseSpeed = 0.2;
 
         // Scene setup
         const scene = new THREE.Scene();
@@ -131,12 +131,12 @@ const App: React.FC = () => {
         };
 
         window.addEventListener('resize', handleResize);
-        window.addEventListener('wheel', handleScroll);
+        window.addEventListener('scroll', handleScroll);
 
         // Cleanup function
         return () => {
             window.removeEventListener('resize', handleResize);
-            window.removeEventListener('wheel', handleScroll);
+            window.removeEventListener('scroll', handleScroll);
             
             if (animationIdRef.current) {
                 cancelAnimationFrame(animationIdRef.current);
@@ -210,12 +210,9 @@ const App: React.FC = () => {
             <div className="relative min-h-screen text-brand-light p-4 sm:p-6 lg:p-8">
                 <main className="max-w-7xl mx-auto">
                     <header className="relative text-center mb-12 pt-4 animate-fade-in-down">
-                        <div className="flex items-center justify-center gap-4 mb-2">
-                           <BloodDropIcon className="h-12 w-12 text-brand-primary transform -scale-y-100" />
-                           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-400 via-red-500 to-amber-500 bg-[length:200%_auto] animate-text-gradient">
+                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-rose-400 via-red-500 to-amber-500 bg-[length:200%_auto] animate-text-gradient mb-2">
                                {t('appTitle')}
                            </h1>
-                        </div>
                         <p className="text-lg text-gray-400 max-w-3xl mx-auto">
                            {t('appTagline')}
                         </p>
