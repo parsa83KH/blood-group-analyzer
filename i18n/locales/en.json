@@ -1,8 +1,12 @@
-
 {
   "appTitle": "Blood Group Analyzer",
   "appTagline": "Analyze blood type genetics and transfusion compatibility",
   "footerRights": "All Rights Reserved.",
+  "footer": {
+    "developedBy": "developed by Parsa Khosravani",
+    "github": "GitHub",
+    "telegram": "Telegram"
+  },
   "unknown": "Unknown",
   "father": "Father",
   "mother": "Mother",
@@ -37,20 +41,23 @@
       "desc": "This tool helps visualize how parents' alleles combine. For instance, if a child has Type O blood, they must have inherited an 'O' allele from each parent. Therefore, a Type 'A' parent of a Type 'O' child must have the genotype AO, not AA.",
       "parent1": "Parent 1",
       "parent2": "Parent 2",
-      "results": "Possible Results"
+      "results": "Possible Results",
+      "aiPrompt": "Explain the Punnett Square example shown in the 'How It Works' section. What do the letters (A, O) and (B, O) for the parents represent? How does this grid predict the four possible children genotypes (AB, AO, BO, OO) and what is the probability for each?"
     },
     "transfusionDiagram": {
       "title": "Transfusion Rules Example",
       "desc": "A person with Type A blood has 'A' antigens on their red blood cells. Their immune system will attack 'B' antigens. Therefore, they can donate to other 'A' types and 'AB' types (who have both antigens), but not 'B' or 'O' types.",
       "donor": "Donor",
       "recipient": "Recipient",
-      "rhNote": "Note: Rh-negative blood can be given to Rh-positive recipients, but not vice-versa."
+      "rhNote": "Note: Rh-negative blood can be given to Rh-positive recipients, but not vice-versa.",
+      "aiPrompt": "Explain the transfusion rules shown in the example. Why can an A+ donor give to A+ and AB+, but not B+ or O-? And why is an O- donor considered a universal donor, able to give to all the types shown?"
     },
     "formulas": {
       "title": "The Science Behind the Calculations",
       "categoryHeader": "Formula Category",
       "formulaHeader": "Mathematical Formula",
       "exampleHeader": "Practical Example",
+      "aiPrompt": "Explain the formula for '{{category}}' which is represented as '{{formula}}'. What does this formula mean and how is it applied in this app to analyze blood genetics?",
       "categories": {
         "genoToPheno": "Genotype to Phenotype",
         "rhInheritance": "RH Inheritance",
@@ -105,12 +112,14 @@
     "rhPheno": "RH Phenotype Probabilities",
     "rhGeno": "RH Genotype Probabilities",
     "hybridGeno": "Full Genotype Probabilities",
-    "hybridPheno": "Full Blood Type Probabilities"
+    "hybridPheno": "Full Blood Type Probabilities",
+    "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Member: {{member}}\n- Analysis Type: {{chartTitle}}\n- Calculated Probabilities: {{chartData}}\n\nQUESTION: Based on the family inputs, please explain in simple terms:\n1. How were these specific probabilities calculated?\n2. What do these results tell us about the member's likely blood type?"
   },
   "transfusion": {
     "title": "Transfusion Compatibility",
     "receive": "Can Receive From",
     "donate": "Can Donate To",
+    "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Member Being Analyzed: {{member}}\n- Member's Potential Blood Types (Probabilities): {{memberPhenoProbs}}\n- Analysis Type: {{analysisType}}\n- Calculated Compatibility Probabilities: {{compatibilityData}}\n\nQUESTION: Based on the information above, please explain in simple terms:\n1. How is the member's list of potential blood types (e.g., {{memberPhenoProbs}}) used to determine these compatibility chances for '{{analysisType}}'?\n2. What do the 'Calculated Compatibility Probabilities' signify? For instance, if it says they can donate to 'A+' with a certain probability, what does that mean in this context?",
     "noDonors": "No compatible donors.",
     "noRecipients": "No compatible recipients.",
     "insufficientData": "Insufficient data for transfusion analysis.",
@@ -128,6 +137,7 @@
     "unexpected": "An unexpected error occurred during analysis. Please check your inputs and try again.",
     "unexpectedDetailed": "Error analyzing blood types: {{error}}",
     "allUnknown": "Please enter at least one blood type for analysis.",
+    "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Error Message: \"{{error}}\"\n\nQUESTION: Based on the provided family inputs, please explain in simple, clear terms what this genetic error means and why it occurred. Avoid technical jargon where possible.",
     "entities": {
       "child_single": "Child ({{number}})",
       "children_list": "Children ({{list}})"
@@ -165,8 +175,10 @@
     "placeholder": "Ask any question...",
     "send": "Send",
     "thinking": "Geno is thinking...",
-    "error": "Sorry, I couldn't process that. Please try again.",
-    "initialMessage": "Hello! I'm Geno, your AI assistant, specialized in blood genetics and this application's functions. How can I help you today?"
+    "error": "Unfortunately, I was unable to process your request. If you are not using a VPN, please turn it on.",
+    "initialMessage": "Hello! I'm Geno, your AI assistant, specialized in blood genetics and this application's functions. How can I help you today?",
+    "askAboutThis": "Ask AI assistant about this section",
+    "askAction": "Ask Geno"
   },
   "aiSystemInstruction": {
     "base": "You are an expert AI assistant embedded in the 'Blood Group Analyzer' web application. Your name is 'Geno'. Your purpose is to help users understand blood genetics, transfusion compatibility, and how to use this specific application.\n\n**About the 'Blood Group Analyzer' App:**\n- **Core Functionality:** {{coreFunctionality}}\n- **Inputs:** {{inputs}}\n- **Outputs:** {{outputs}}\n- **'How It Works' Section:** {{howItWorks}}\n- **Technology:** {{technology}}\n- **Languages:** {{languages}}\n\n**Your Persona & Guidelines:**\n- {{persona}}\n- {{safety}}\n- **Language:** Respond in the language the user asks the question in. The current user language is: {{language}}.",
