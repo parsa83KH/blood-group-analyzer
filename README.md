@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://github.com/parsa83KH/blood-group-analyzer/raw/main/.github/assets/logo.png" height="95" alt="Blood Group Analyzer Logo"/>
-</p>
-
 <h1 align="center">🩸 Blood Group Analyzer & AI Transfusion Assistant</h1>
 
 <p align="center">
@@ -85,8 +81,6 @@ This app relies on:
 
 > [Try The Live Demo Now](https://parsa83kh.github.io/blood-group-analyzer/)
 
-<img src="https://github.com/parsa83KH/blood-group-analyzer/raw/main/.github/assets/screenshot-example.png" width="600" alt="Blood Group Analyzer Screenshot"/>
-
 ---
 
 ## 📦 Project Highlights
@@ -102,14 +96,6 @@ This app relies on:
 | [Parsa Khosravani](https://github.com/parsa83KH) |
 | :--------------------------------: |
 | Laboratory Science Student <br> Python & Web Enthusiast |
-
----
-
-## 📄 Citation
-
-If using this project for education, teaching, or research, please cite as:  
-Khosravani, Parsa. “Blood Group Analyzer & AI Transfusion Assistant.” GitHub, 2025.
-https://github.com/parsa83KH/blood-group-analyzer
 
 ---
 
