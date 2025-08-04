@@ -95,7 +95,7 @@ This app relies on:
 
 | [Parsa Khosravani](https://github.com/parsa83KH) |
 | :--------------------------------: |
-| Laboratory Science Student <br> Python & Web Enthusiast |
+| Laboratory Science Student <br> AI & Web Enthusiast |
 
 ---
 
