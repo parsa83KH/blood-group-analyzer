@@ -322,7 +322,6 @@ If you use this tool in research or education, please cite:
 🌟 **Mission**: Bridging healthcare and technology
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/parsa83KH)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/parsa-khosravani)
 
 </div>
 
@@ -334,9 +333,8 @@ If you use this tool in research or education, please cite:
 
 ### **Get Help**
 
-[![Discord](https://img.shields.io/badge/Discord-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/bloodanalyzer)
 [![GitHub Issues](https://img.shields.io/badge/Issues-GitHub-orange?style=for-the-badge&logo=github)](https://github.com/parsa83KH/blood-group-analyzer/issues)
-[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:parsa.khosravani@example.com)
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:parsakhosravni83@gmail.com)
 
 **Response Time**: Usually within 24 hours  
 **Support Languages**: English, Persian  
