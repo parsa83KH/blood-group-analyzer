@@ -14,7 +14,6 @@
 <p>
   <a href="https://parsa83kh.github.io/blood-group-analyzer/">🌐 Live Demo</a> |
   <a href="#-getting-started">🚀 Quick Start</a> |
-  <a href="#-documentation">📚 Documentation</a> |
   <a href="#-contributing">🤝 Contributing</a>
 </p>
 
