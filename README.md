@@ -334,7 +334,7 @@ If you use this tool in research or education, please cite:
 ### **Get Help**
 
 [![GitHub Issues](https://img.shields.io/badge/Issues-GitHub-orange?style=for-the-badge&logo=github)](https://github.com/parsa83KH/blood-group-analyzer/issues)
-[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:parsakhosravni83@gmail.com)
+[![Email](https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail)](mailto:parsakhosravani83@gmail.com)
 
 **Response Time**: Usually within 24 hours  
 **Support Languages**: English, Persian  
