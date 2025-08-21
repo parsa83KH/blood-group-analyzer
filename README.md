@@ -364,6 +364,6 @@ If you use this tool in research or education, please cite:
 
 <br>
 
-**Made with ❤️ for the global medical community.**
+**Made with ❤️ for the global medical community**
 
 </div>
