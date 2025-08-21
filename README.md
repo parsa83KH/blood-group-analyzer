@@ -1152,7 +1152,7 @@ Empowering the next generation of laboratory scientists worldwide
 
 <br>
 
-Made with ❤️ for the global medical community
+Made with ❤️ for the global medical community.
 
 <p align="center">
 
