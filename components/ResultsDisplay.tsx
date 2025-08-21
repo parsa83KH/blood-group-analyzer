@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FamilyAnalysisResult, MemberAnalysisResult, ProbabilityMap, Person } from '../types';
 import Card from './ui/Card';
