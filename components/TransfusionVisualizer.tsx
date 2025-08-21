@@ -1,7 +1,6 @@
 import React from 'react';
 import { TransfusionCompatibility, ProbabilityMap, TransfusionSummary, Person, MemberAnalysisResult } from '../types';
 import { ArrowDownTrayIcon, ArrowUpTrayIcon } from './icons';
-import AnimatedPieChart from './AnimatedPieChart';
 import ResultsTable from './ResultsTable';
 import { useLanguage } from '../i18n/LanguageContext';
 import AskAIButton from './AskAIButton';
@@ -73,17 +72,10 @@ const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, ic
             </h5>
             {hasData ? (
                  <div className="w-full bg-gray-800/30 p-4 rounded-lg border border-gray-700/50">
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-center">
-                        <div className="order-2 xl:order-1">
-                            <ResultsTable data={data} />
-                        </div>
-                        <div className="h-48 w-full order-1 xl:order-2">
-                            <AnimatedPieChart data={data} />
-                        </div>
-                    </div>
+                    <ResultsTable data={data} />
                 </div>
             ) : (
-                <div className="w-full bg-gray-800/30 p-4 rounded-lg border border-gray-700/50 flex items-center justify-center h-[244px]">
+                <div className="w-full bg-gray-800/30 p-4 rounded-lg border border-gray-700/50 flex items-center justify-center min-h-[100px]">
                     <p className="text-gray-500 text-center">
                         {title.includes(t('transfusion.receive')) ? t('transfusion.noDonors') : t('transfusion.noRecipients')}
                     </p>

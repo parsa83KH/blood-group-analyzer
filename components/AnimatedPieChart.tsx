@@ -1,26 +1,67 @@
-import React from 'react';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import React, { useState, useCallback } from 'react';
+import { PieChart, Pie, Tooltip, ResponsiveContainer, Sector } from 'recharts';
 import { ProbabilityMap } from '../types';
 
 interface AnimatedPieChartProps {
     data: ProbabilityMap;
 }
 
-const COLORS = ['#ef4444', '#f97316', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#6366f1', '#a855f7'];
+export const COLORS = ['#ef4444', '#f97316', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#6366f1', '#a855f7'];
 
 const CustomTooltip: React.FC<any> = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
-            <div className="bg-gray-800 p-2 border border-gray-700 rounded-md shadow-lg">
-                <p className="label text-white">{`${payload[0].name} : ${payload[0].value.toFixed(2)}%`}</p>
+            <div className="bg-gray-900/80 backdrop-blur-sm p-3 border border-gray-700 rounded-lg shadow-2xl shadow-black/50">
+                <p className="label text-white font-bold">{`${payload[0].name}`}</p>
+                <p className="intro text-gray-300">{`Probability: ${payload[0].value.toFixed(2)}%`}</p>
             </div>
         );
     }
     return null;
 };
 
+// This custom component renders the active sector with a "pop-out" effect.
+const ActiveShape = (props: any) => {
+    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, stroke, strokeWidth } = props;
+    
+    return (
+        <g>
+            <Sector
+                cx={cx}
+                cy={cy}
+                innerRadius={innerRadius}
+                outerRadius={outerRadius + 6}
+                startAngle={startAngle}
+                endAngle={endAngle}
+                fill={fill}
+                stroke={stroke || '#1f2937'}
+                strokeWidth={strokeWidth || 2}
+                style={{
+                    filter: `drop-shadow(0px 2px 6px ${fill}80)`,
+                    transition: 'all 0.3s ease-in-out',
+                }}
+            />
+        </g>
+    );
+};
+
 const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({ data }) => {
-    const chartData = Object.entries(data).map(([name, value]) => ({ name, value }));
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const chartData = Object.entries(data)
+        .sort(([, a], [, b]) => b - a)
+        .map(([name, value], index) => ({
+            name,
+            value,
+            fill: COLORS[index % COLORS.length],
+    }));
+
+    const onPieEnter = useCallback((_: any, index: number) => {
+        setActiveIndex(index);
+    }, [setActiveIndex]);
+    
+    const onPieLeave = useCallback(() => {
+        setActiveIndex(null);
+    }, [setActiveIndex]);
 
     if(chartData.length === 0) {
         return <div className="flex items-center justify-center h-full text-gray-500">No data available</div>;
@@ -29,24 +70,24 @@ const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({ data }) => {
     return (
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-                <Pie
+                 <Pie
+                    // @ts-ignore The `activeIndex` prop is valid for recharts but may have incorrect types in some versions.
+                    activeIndex={activeIndex ?? -1}
+                    activeShape={ActiveShape}
                     data={chartData}
                     cx="50%"
                     cy="50%"
-                    labelLine={false}
                     outerRadius="80%"
-                    fill="#8884d8"
                     dataKey="value"
                     nameKey="name"
-                    isAnimationActive={true}
-                    animationDuration={800}
+                    onMouseEnter={onPieEnter}
+                    onMouseLeave={onPieLeave}
+                    paddingAngle={3}
+                    stroke="#1f2937"
+                    strokeWidth={2}
                 >
-                    {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} className="focus:outline-none" />
-                    ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255, 255, 255, 0.1)' }} />
-                <Legend iconSize={10} wrapperStyle={{fontSize: '12px'}} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
             </PieChart>
         </ResponsiveContainer>
     );

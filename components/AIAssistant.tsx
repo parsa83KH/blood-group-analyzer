@@ -7,6 +7,13 @@ import { PaperAirplaneIcon, SparklesIcon } from './icons';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+// Helper function to detect RTL text by checking for characters in the Arabic script range.
+const isRTL = (text: string): boolean => {
+    if (!text) return false;
+    const rtlRegex = /[\u0600-\u06FF]/;
+    return rtlRegex.test(text);
+};
+
 const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
     const { t, language } = useLanguage();
     
@@ -14,10 +21,12 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
     const [messages, setMessages] = useState<ChatMessage[]>([{ role: 'model', text: initialMessageText }]);
     
     useEffect(() => {
-        if (messages.length === 1 && messages[0].role === 'model' && messages[0].text !== initialMessageText) {
+        // This effect updates the initial message text if the app's language changes,
+        // but only if the user hasn't started a conversation yet.
+        if (messages.length === 1 && messages[0].role === 'model') {
             setMessages([{ role: 'model', text: initialMessageText }]);
         }
-    }, [initialMessageText, messages]);
+    }, [initialMessageText]);
     
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -53,6 +62,9 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
         try {
             const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
+            // Determine prompt language to guide the AI's response language
+            const promptLanguage = isRTL(promptToSend) ? 'fa' : 'en';
+
             const systemInstruction = t('aiSystemInstruction.base', {
                 coreFunctionality: t('aiSystemInstruction.coreFunctionality'),
                 inputs: t('aiSystemInstruction.inputs'),
@@ -62,7 +74,7 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
                 languages: t('aiSystemInstruction.languages'),
                 persona: t('aiSystemInstruction.persona'),
                 safety: t('aiSystemInstruction.safety'),
-                language: language,
+                language: promptLanguage, // Use the detected language of the prompt
             });
             
             const responseStream = await ai.models.generateContentStream({
@@ -120,6 +132,21 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
     };
 
     const userIconText = language === 'fa' ? 'من' : 'me';
+    
+    const handleGlowMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+        const el = e.currentTarget;
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        el.style.setProperty('--mouse-x', `${x}px`);
+        el.style.setProperty('--mouse-y', `${y}px`);
+    };
+    const handleGlowMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+        e.currentTarget.classList.add('is-hovering');
+    };
+    const handleGlowMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+        e.currentTarget.classList.remove('is-hovering');
+    };
 
     return (
         <Card className="flex flex-col h-[600px] max-h-[80vh]">
@@ -132,6 +159,8 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
             <div ref={chatContainerRef} className="flex-grow overflow-y-auto pr-2 -mr-2 space-y-4 mb-4 custom-scrollbar">
                 {messages.map((msg, index) => {
                     const isThinkingPlaceholder = msg.role === 'model' && msg.text === '' && isLoading && index === messages.length - 1;
+                    const messageIsRtl = isRTL(msg.text);
+                    const messageDir = messageIsRtl ? 'rtl' : 'ltr';
 
                     return (
                         <div key={index} className={`flex items-start gap-3 animate-fade-in ${msg.role === 'user' ? 'justify-end' : ''}`}>
@@ -141,7 +170,8 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
                                     msg.role === 'model'
                                         ? 'bg-gray-800 text-gray-300 markdown-content'
                                         : 'bg-brand-accent text-white'
-                                }`}
+                                } ${messageIsRtl ? 'font-persian' : ''}`}
+                                dir={messageDir}
                             >
                                {isThinkingPlaceholder ? (
                                     <div className="loading-dots">
@@ -159,7 +189,13 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
                 })}
             </div>
             <div className="flex-shrink-0 mt-auto pt-4 border-t border-gray-700/50">
-                 <div className="flex items-end gap-2 bg-gray-900 border border-gray-600 rounded-xl p-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-brand-accent focus-within:border-transparent">
+                 <div
+                    className="interactive-glow-border flex items-end gap-2 bg-gray-900 border border-gray-600 rounded-xl p-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-brand-accent focus-within:border-transparent"
+                    onMouseMove={handleGlowMouseMove}
+                    onMouseEnter={handleGlowMouseEnter}
+                    onMouseLeave={handleGlowMouseLeave}
+                    style={{ borderRadius: '0.75rem' }}
+                >
                     <textarea
                         ref={textareaRef}
                         value={input}
@@ -167,9 +203,10 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
                         onKeyDown={handleKeyDown}
                         placeholder={isLoading ? t('aiAssistant.thinking') : t('aiAssistant.placeholder')}
                         disabled={isLoading}
-                        className="flex-grow w-full bg-transparent pl-3 pr-1 py-2 text-white placeholder-gray-500 focus:outline-none resize-none overflow-y-hidden custom-scrollbar"
+                        className={`flex-grow w-full bg-transparent pl-3 pr-1 py-2 text-white placeholder-gray-500 focus:outline-none resize-none overflow-y-hidden custom-scrollbar ${isRTL(input) || (language === 'fa' && !input) ? 'font-persian' : 'font-sans'}`}
                         aria-label={t('aiAssistant.placeholder')}
                         rows={1}
+                        dir={input ? (isRTL(input) ? 'rtl' : 'ltr') : (language === 'fa' ? 'rtl' : 'ltr')}
                     />
                     <button
                         onClick={handleSend}

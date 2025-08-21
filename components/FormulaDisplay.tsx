@@ -1,3 +1,7 @@
+
+
+
+
 import React, { useMemo } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import AskAIButton from './AskAIButton';

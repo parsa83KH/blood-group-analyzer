@@ -1,4 +1,8 @@
-import React, { useState, useEffect } from 'react';
+
+
+
+
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { FamilyAnalysisResult, MemberAnalysisResult, ProbabilityMap, Person } from '../types';
 import Card from './ui/Card';
 import AnimatedPieChart from './AnimatedPieChart';
@@ -7,6 +11,7 @@ import TransfusionVisualizer from './TransfusionVisualizer';
 import { WarningIcon } from './icons';
 import { useLanguage } from '../i18n/LanguageContext';
 import AskAIButton from './AskAIButton';
+import Typewriter from './ui/Typewriter';
 
 // Helper to format family data for the AI prompt
 const formatFamilyForPrompt = (family: Person[], t: (key: string) => string): string => {
@@ -33,6 +38,37 @@ const getMemberName = (name: string, t: (key: string, options?: Record<string, s
         return `${t('child')} ${parseInt(match[1], 10)}`;
     }
     return name;
+};
+
+// Component to parse and style the error messages with highlighted parts
+const FormattedErrorMessage: React.FC<{ message: string }> = ({ message }) => {
+    // Split the message by custom delimiters (__...__ for titles, *...* for highlights)
+    const parts = message.split(/(__.*?__|\*.*?\*)/g).filter(Boolean);
+
+    return (
+        <>
+            {parts.map((part, i) => {
+                if (part.startsWith('__') && part.endsWith('__')) {
+                    // Style for titles like "ABO Error:"
+                    return (
+                        <span key={i} className="font-bold text-red-400 mr-2">
+                            {part.substring(2, part.length - 2)}
+                        </span>
+                    );
+                }
+                if (part.startsWith('*') && part.endsWith('*')) {
+                     // Style for highlighted keywords
+                    return (
+                        <strong key={i} className="text-rose-300 bg-rose-900/50 rounded px-1.5 py-0.5 font-mono font-bold not-italic mx-0.5">
+                            {part.substring(1, part.length - 1)}
+                        </strong>
+                    );
+                }
+                // Regular text part
+                return <span key={i}>{part}</span>;
+            })}
+        </>
+    );
 };
 
 interface ProbabilityDisplayBlockProps {
@@ -68,11 +104,11 @@ const ProbabilityDisplayBlock: React.FC<ProbabilityDisplayBlockProps> = ({ title
                 className="top-2 right-2 rtl:left-2 rtl:right-auto z-10"
             />
             <h5 className="text-lg font-medium mb-4 text-center text-gray-300">{title}</h5>
-            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-center">
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-center">
                 <div className="order-2 xl:order-1">
                     <ResultsTable data={data} />
                 </div>
-                <div className="h-48 w-full order-1 xl:order-2">
+                <div className="h-64 w-full order-1 xl:order-2">
                     <AnimatedPieChart data={data} />
                 </div>
             </div>
@@ -84,23 +120,54 @@ interface MemberResultCardProps {
     analysis: MemberAnalysisResult;
     family: Person[];
     onAskAI: (prompt: string) => void;
+    isStickyActive: boolean;
 }
 
-const MemberResultCard: React.FC<MemberResultCardProps> = ({ analysis, family, onAskAI }) => {
+const MemberResultCard: React.FC<MemberResultCardProps> = ({ analysis, family, onAskAI, isStickyActive }) => {
     const { t } = useLanguage();
     const promptContext = { family, member: analysis };
+
+    const formattedHybridGenoProbs = useMemo(() => {
+        return Object.fromEntries(
+            Object.entries(analysis.hybrid_genotype_probabilities).map(([key, value]) => {
+                const formattedKey = key.length === 4 ? `${key.substring(0, 2)}_${key.substring(2)}` : key;
+                return [formattedKey, value];
+            })
+        );
+    }, [analysis.hybrid_genotype_probabilities]);
+
+    const parentSummary = useMemo(() => {
+        const formatParentType = (p: Person) => {
+            const abo = p.ABO === 'Unknown' ? '' : p.ABO;
+            const rh = p.RH === 'Unknown' ? '' : p.RH;
+            const fullType = `${abo}${rh}`;
+            return fullType || t('unknown');
+        };
+        const fatherType = formatParentType(family[0]);
+        const motherType = formatParentType(family[1]);
+        return `(${t('father')}: ${fatherType}, ${t('mother')}: ${motherType})`;
+    }, [family, t]);
 
     return (
         <div className="animate-fade-in-up">
             <Card className="bg-gray-900/50 border-gray-800">
-                <h3 className="text-2xl font-bold text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-rose-500">{t('memberAnalysisTitle', { member: getMemberName(analysis.member, t) })}</h3>
+                <h3 className="sticky top-0 z-30 flex items-center justify-center gap-x-4 flex-wrap text-2xl font-bold text-center -mx-6 -mt-6 sm:-mx-8 sm:-mt-8 mb-6 bg-gray-900/80 backdrop-blur-sm py-4 rounded-t-xl border-b border-gray-700/50 shadow-lg shadow-black/30">
+                     <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-rose-500">
+                        {t('memberAnalysisTitle', { member: getMemberName(analysis.member, t) })}
+                    </span>
+                    <Typewriter 
+                        text={parentSummary}
+                        active={isStickyActive}
+                        className="text-base font-normal text-gray-400"
+                    />
+                </h3>
                 
                 <div className="space-y-6 mb-8">
                     <ProbabilityDisplayBlock title={t('charts.aboPheno')} data={analysis.abo_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
                     <ProbabilityDisplayBlock title={t('charts.aboGeno')} data={analysis.abo_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
                     <ProbabilityDisplayBlock title={t('charts.rhPheno')} data={analysis.rh_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
                     <ProbabilityDisplayBlock title={t('charts.rhGeno')} data={analysis.rh_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
-                    <ProbabilityDisplayBlock title={t('charts.hybridGeno')} data={analysis.hybrid_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
+                    <ProbabilityDisplayBlock title={t('charts.hybridGeno')} data={formattedHybridGenoProbs} onAskAI={onAskAI} promptContext={promptContext} />
                     <ProbabilityDisplayBlock title={t('charts.hybridPheno')} data={analysis.hybrid_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
                 </div>
                 
@@ -127,6 +194,8 @@ interface ResultsDisplayProps {
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResult, memberAnalyses, family, onAskAI }) => {
     const { t } = useLanguage();
     const [selectedMember, setSelectedMember] = useState<string | null>(null);
+    const [isStickyActive, setIsStickyActive] = useState(false);
+    const memberSelectorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (memberAnalyses.length > 0) {
@@ -135,6 +204,28 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
             setSelectedMember(null);
         }
     }, [memberAnalyses]);
+    
+    useEffect(() => {
+        const selectorElement = memberSelectorRef.current;
+        if (!selectorElement || memberAnalyses.length === 0) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                // The header becomes "sticky" when the selector element is scrolled completely above the viewport.
+                setIsStickyActive(!entry.isIntersecting && entry.boundingClientRect.bottom < 0);
+            },
+            { threshold: [0, 1] }
+        );
+
+        observer.observe(selectorElement);
+
+        return () => {
+            if (selectorElement) {
+                observer.unobserve(selectorElement);
+            }
+        };
+    }, [memberAnalyses]); // Rerun when analyses load, so ref is available.
+
 
     if (isLoading) {
         return (
@@ -178,12 +269,14 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
         
         return (
             <div className="relative group mt-8">
-                <Card className="text-center border-red-500/50 bg-gradient-to-br from-red-900/30 to-gray-900/20 animate-fade-in">
+                <Card 
+                    className="text-center border-red-500/50 bg-gray-900/50 animate-fade-in"
+                >
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <WarningIcon className="h-12 w-12 text-red-400 flex-shrink-0" />
                         <div>
                             <h3 className="text-2xl font-bold text-red-400 mb-2">{t('error.title')}</h3>
-                            <div className="space-y-1">
+                            <div className="space-y-2">
                               {analysisResult.errors.map((error, i) => {
                                   let message = t(error);
                                   try {
@@ -202,7 +295,11 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
                                           message = t(errObj.key, finalOptions);
                                       }
                                   } catch (e) { /* Fallback to default message */ }
-                                  return <p key={i} className="text-red-300 ltr:text-left rtl:text-right text-sm sm:text-base">{message}</p>;
+                                  return (
+                                    <p key={i} className="text-red-300 ltr:text-left rtl:text-right text-sm sm:text-base leading-relaxed">
+                                        <FormattedErrorMessage message={message} />
+                                    </p>
+                                  );
                               })}
                             </div>
                         </div>
@@ -223,15 +320,15 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
     
     return (
         <div className="space-y-8 mt-12">
-            <div className="flex flex-wrap justify-center gap-2 mb-8 animate-fade-in">
+            <div ref={memberSelectorRef} className="flex flex-wrap justify-center gap-3 mb-8 animate-fade-in">
                 {memberAnalyses.map((analysis) => (
                     <button
                         key={analysis.member}
                         onClick={() => setSelectedMember(analysis.member)}
-                        className={`px-4 py-2 text-sm font-semibold rounded-md transition-all duration-300 transform hover:-translate-y-0.5
+                        className={`relative px-5 py-2.5 text-sm font-bold rounded-full transition-all duration-300 ease-in-out focus:outline-none
                             ${selectedMember === analysis.member
-                                ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/30'
-                                : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                                ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/40'
+                                : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 hover:text-white'
                             }`}
                     >
                         {getMemberName(analysis.member, t)}
@@ -242,7 +339,13 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
             {memberAnalyses
                 .filter(analysis => analysis.valid && analysis.member === selectedMember)
                 .map((analysis) => (
-                    <MemberResultCard key={analysis.member} analysis={analysis} family={family} onAskAI={onAskAI} />
+                    <MemberResultCard 
+                        key={analysis.member} 
+                        analysis={analysis} 
+                        family={family} 
+                        onAskAI={onAskAI}
+                        isStickyActive={isStickyActive}
+                    />
             ))}
         </div>
     );

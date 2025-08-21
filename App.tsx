@@ -1,11 +1,10 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import * as THREE from 'three';
 import { Person, FamilyAnalysisResult, MemberAnalysisResult, AIAssistantHandle } from './types';
 import BloodInputForm from './components/BloodInputForm';
 import ResultsDisplay from './components/ResultsDisplay';
 import HowItWorks from './components/HowItWorks';
 import LanguageSwitcher from './components/LanguageSwitcher';
-import { QuestionMarkCircleIcon, GitHubIcon, PaperAirplaneIcon } from './components/icons';
+import { QuestionMarkCircleIcon } from './components/icons';
 import { BloodTypeCalculator } from './services/bloodCalculator';
 import { useLanguage } from './i18n/LanguageContext';
 import AnimatedSection from './components/ui/AnimatedSection';
@@ -22,8 +21,6 @@ const App: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [showHowItWorks, setShowHowItWorks] = useState(false);
 
-    const mountRef = useRef<HTMLDivElement>(null);
-    const animationIdRef = useRef<number | null>(null);
     const aiAssistantRef = useRef<AIAssistantHandle>(null);
     const aiSectionRef = useRef<HTMLDivElement>(null);
 
@@ -34,127 +31,6 @@ const App: React.FC = () => {
         document.body.classList.toggle('font-sans', language !== 'fa');
     }, [language]);
 
-    useEffect(() => {
-        if (!mountRef.current) return;
-
-        let renderer: THREE.WebGLRenderer | null = null;
-        const speed = { boost: 0 };
-        const baseSpeed = 0.2;
-
-        // Scene setup
-        const scene = new THREE.Scene();
-
-        // Camera setup
-        const camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
-        camera.position.z = 10;
-
-        // Renderer setup
-        renderer = new THREE.WebGLRenderer({ 
-            antialias: true, 
-            alpha: true
-        });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        mountRef.current.appendChild(renderer.domElement);
-
-        // Starfield
-        const starGeometry = new THREE.BufferGeometry();
-        const starCount = 5000;
-        const posArray = new Float32Array(starCount * 3);
-
-        for (let i = 0; i < starCount; i++) {
-            const i3 = i * 3;
-            posArray[i3] = (Math.random() - 0.5) * 600; // x
-            posArray[i3 + 1] = (Math.random() - 0.5) * 600; // y
-            posArray[i3 + 2] = (Math.random() - 0.5) * 400; // z
-        }
-        
-        starGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-        const starMaterial = new THREE.PointsMaterial({
-            size: 0.1,
-            color: 0xffffff,
-            transparent: true,
-            opacity: 0.8,
-            blending: THREE.AdditiveBlending,
-            sizeAttenuation: true,
-        });
-
-        const stars = new THREE.Points(starGeometry, starMaterial);
-        scene.add(stars);
-
-        // Animation loop
-        const animate = () => {
-            animationIdRef.current = requestAnimationFrame(animate);
-
-            // Animate stars
-            const positions = starGeometry.attributes.position.array as Float32Array;
-            const currentSpeed = baseSpeed + speed.boost;
-
-            for (let i = 0; i < starCount; i++) {
-                const i3 = i * 3;
-                positions[i3 + 2] += currentSpeed; // Move along z-axis
-
-                // Boundary wrapping
-                if (positions[i3 + 2] > 200) {
-                    positions[i3 + 2] = -200;
-                    positions[i3] = (Math.random() - 0.5) * 600;
-                    positions[i3 + 1] = (Math.random() - 0.5) * 600;
-                }
-            }
-            starGeometry.attributes.position.needsUpdate = true;
-
-            // Decay speed boost
-            speed.boost *= 0.95; 
-
-            renderer?.render(scene, camera);
-        };
-
-        animate();
-
-        // Handle window resize
-        const handleResize = () => {
-            if (!renderer) return;
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        };
-        
-        // Handle scroll
-        const handleScroll = () => {
-            // Set speed boost, but clamp it to a max value
-            speed.boost = Math.min(speed.boost + 0.3, 3); 
-        };
-
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('scroll', handleScroll);
-
-        // Cleanup function
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('scroll', handleScroll);
-            
-            if (animationIdRef.current) {
-                cancelAnimationFrame(animationIdRef.current);
-            }
-            
-            scene.remove(stars);
-            starGeometry.dispose();
-            starMaterial.dispose();
-            
-            if (renderer) {
-                if (mountRef.current && renderer.domElement) {
-                    mountRef.current.removeChild(renderer.domElement);
-                }
-                renderer.dispose();
-            }
-        };
-    }, []);
 
     const handleAnalysis = useCallback(async () => {
         setIsLoading(true);
@@ -203,20 +79,24 @@ const App: React.FC = () => {
         }
     };
 
+    const handleGlowMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+        const el = e.currentTarget;
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        el.style.setProperty('--mouse-x', `${x}px`);
+        el.style.setProperty('--mouse-y', `${y}px`);
+    };
+    const handleGlowMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+        e.currentTarget.classList.add('is-hovering');
+    };
+    const handleGlowMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
+        e.currentTarget.classList.remove('is-hovering');
+    };
+
     return (
         <>
-            <div 
-                ref={mountRef} 
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    zIndex: -1,
-                    background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%)'
-                }}
-            />
+            <div className="fixed inset-0 -z-10 site-background" />
             <div className="relative min-h-screen text-brand-light p-4 sm:p-6 lg:p-8">
                 <main className="max-w-7xl mx-auto">
                     <header className="relative text-center mb-12 pt-4 animate-fade-in-down">
@@ -230,8 +110,12 @@ const App: React.FC = () => {
                            <LanguageSwitcher />
                            <button
                                onClick={() => setShowHowItWorks(prev => !prev)}
-                               className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 font-semibold px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700 hover:border-brand-accent hover:bg-brand-accent/20 hover:shadow-lg hover:shadow-brand-accent/20 transform hover:-translate-y-0.5"
+                               className="interactive-glow-border inline-flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 font-semibold px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700 hover:border-brand-accent hover:bg-brand-accent/20 hover:shadow-lg hover:shadow-brand-accent/20 transform hover:-translate-y-0.5"
                                aria-expanded={showHowItWorks}
+                               onMouseMove={handleGlowMouseMove}
+                               onMouseEnter={handleGlowMouseEnter}
+                               onMouseLeave={handleGlowMouseLeave}
+                               style={{ borderRadius: '9999px' }}
                            >
                                <QuestionMarkCircleIcon className="w-5 h-5" />
                                {t('howItWorks.title')}
@@ -271,16 +155,31 @@ const App: React.FC = () => {
                     </div>
                 </main>
                  <footer className="text-center mt-16 text-gray-500 text-sm space-y-2">
-                    <p>&copy; {new Date().getFullYear()} {t('appTitle')}. {t('footerRights')}</p>
-                    <p>{t('footer.developedBy')}</p>
-                    <div className="flex justify-center items-center gap-6 pt-2">
-                        <a href="https://github.com/parsa83KH" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition-colors">
-                            <GitHubIcon className="w-5 h-5" />
-                            {t('footer.github')}
+                    <p>&copy; 2024 {t('appTitle')}. {t('footerRights')}</p>
+                    <p className="text-base text-gray-400">
+                        {t('footer.developedBy')}{' '}
+                        <strong className="font-semibold text-gray-300">
+                           {t('footer.developerName')}
+                        </strong>
+                    </p>
+                    <div className="flex justify-center items-center gap-6 pt-2 footer-social-links">
+                        <a href="https://github.com/parsa83KH" target="_blank" rel="noopener noreferrer" className="github-link flex items-center gap-2 hover:text-gray-300 transition-colors">
+                            <span className="icon-wrapper">
+                               <i className="fa-brands fa-github"></i>
+                            </span>
+                            <span>{t('footer.github')}</span>
                         </a>
-                        <a href="https://t.me/ParsaKH_83" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gray-300 transition-colors">
-                            <PaperAirplaneIcon className="w-5 h-5" />
-                            {t('footer.telegram')}
+                         <a href="https://mail.google.com/mail/?view=cm&to=parsakhosravani83@gmail.com" target="_blank" rel="noopener noreferrer" className="email-link flex items-center gap-2 hover:text-gray-300 transition-colors">
+                            <span className="icon-wrapper">
+                              <i className="fa-solid fa-envelope"></i>
+                            </span>
+                            <span>{t('footer.email')}</span>
+                        </a>
+                        <a href="https://t.me/ParsaKH_83" target="_blank" rel="noopener noreferrer" className="telegram-link flex items-center gap-2 hover:text-gray-300 transition-colors">
+                            <span className="icon-wrapper">
+                              <i className="fa-brands fa-telegram"></i>
+                            </span>
+                            <span>{t('footer.telegram')}</span>
                         </a>
                     </div>
                 </footer>

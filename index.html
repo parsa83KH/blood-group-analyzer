@@ -8,10 +8,184 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
       html {
         scroll-behavior: smooth;
       }
+      body {
+        background-color: #111827; /* brand-dark */
+      }
+      .site-background {
+        background-image:
+          radial-gradient(circle at 10% 15%, rgba(220, 38, 38, 0.15) 0%, transparent 35%),
+          radial-gradient(circle at 90% 85%, rgba(79, 70, 229, 0.12) 0%, transparent 40%);
+      }
+
+      /* Unified Glow Effect */
+      .interactive-glow-border {
+          position: relative;
+      }
+      .interactive-glow-border::before {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          border-radius: inherit; /* Inherit from parent element */
+          padding: 2px;
+          background: radial-gradient(350px circle at var(--mouse-x, -200px) var(--mouse-y, -200px), rgba(79, 70, 229, 0.6), transparent 80%);
+          -webkit-mask:
+              linear-gradient(#fff 0 0) content-box,
+              linear-gradient(#fff 0 0);
+          -webkit-mask-composite: xor;
+          mask-composite: exclude;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+      }
+      .interactive-glow-border.is-hovering::before {
+          opacity: 1;
+      }
+
+      .interactive-tilt-box {
+          position: relative;
+          background-color: #1f2937; /* bg-gray-800 */
+          transform-style: preserve-3d;
+          transform: perspective(1000px) rotateY(var(--rotateY, 0)) rotateX(var(--rotateX, 0)) scale(1);
+          transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      .interactive-tilt-box.is-hovering {
+          transform: perspective(1000px) rotateY(var(--rotateY, 0)) rotateX(var(--rotateX, 0)) scale(1.05);
+          transition: transform 0.1s ease-out;
+          z-index: 10;
+      }
+      .interactive-tilt-box-content {
+          transform: translateZ(20px);
+      }
+      
+      /* Give an individual input card a higher z-index to stack over its siblings */
+      .interactive-tilt-box:has(.select-is-open) {
+          z-index: 30;
+      }
+      
+      /* Elevate the parent card section when any child select is open to stack over subsequent page elements */
+      .interactive-glow-border:has(.select-is-open) {
+          z-index: 40;
+      }
+
+      /* Blob Button Animation */
+      .blob-btn {
+        z-index: 1;
+        position: relative;
+        padding: 1rem 2.5rem;
+        text-align: center;
+        text-transform: uppercase;
+        color: #4f46e5; /* brand-accent */
+        font-size: 16px;
+        font-weight: 700;
+        background-color: transparent;
+        outline: none;
+        border: none;
+        transition: color 0.5s;
+        cursor: pointer;
+        border-radius: 30px;
+      }
+      .blob-btn:before {
+        content: "";
+        z-index: 1;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border: 2px solid #4f46e5; /* brand-accent */
+        border-radius: 30px;
+      }
+      .blob-btn:after {
+        content: "";
+        z-index: -2;
+        position: absolute;
+        left: 3px;
+        top: 3px;
+        width: 100%;
+        height: 100%;
+        transition: all 0.3s 0.2s;
+        border-radius: 30px;
+      }
+      .blob-btn:hover {
+        color: #FFFFFF;
+      }
+      .blob-btn:hover:after {
+        transition: all 0.3s;
+        left: 0;
+        top: 0;
+      }
+      .blob-btn__inner {
+        z-index: -1;
+        overflow: hidden;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 30px;
+      }
+      .blob-btn__blobs {
+        position: relative;
+        display: block;
+        height: 100%;
+        filter: url('#goo');
+      }
+      .blob-btn__blob {
+        position: absolute;
+        top: 2px;
+        width: 25%;
+        height: 100%;
+        background: #4f46e5; /* brand-accent */
+        border-radius: 100%;
+        transform: translate3d(0, 150%, 0) scale(1.7);
+        transition: transform 0.45s;
+      }
+      @supports(filter: url('#goo')) {
+        .blob-btn__blob {
+          transform: translate3d(0, 150%, 0) scale(1.4);
+        }
+      }
+      .blob-btn__blob:nth-child(1) { left: 0%; transition-delay: 0s; }
+      .blob-btn__blob:nth-child(2) { left: 30%; transition-delay: 0.08s; }
+      .blob-btn__blob:nth-child(3) { left: 60%; transition-delay: 0.16s; }
+      .blob-btn__blob:nth-child(4) { left: 90%; transition-delay: 0.24s; }
+      .blob-btn:hover .blob-btn__blob {
+        transform: translateZ(0) scale(1.7);
+      }
+      @supports(filter: url('#goo')) {
+        .blob-btn:hover .blob-btn__blob {
+          transform: translateZ(0) scale(1.4);
+        }
+      }
+      .blob-btn[disabled] {
+        cursor: not-allowed;
+        color: #6b7280;
+        filter: grayscale(80%);
+      }
+      .blob-btn[disabled]:before {
+        border-color: #6b7280;
+      }
+      .blob-btn[disabled]:hover {
+        color: #6b7280;
+      }
+      .blob-btn[disabled] .blob-btn__blob {
+        background: #6b7280;
+      }
+      /* Prevent animation on disabled hover */
+      .blob-btn[disabled]:hover .blob-btn__blob {
+         transform: translate3d(0, 150%, 0) scale(1.7);
+      }
+      @supports(filter: url('#goo')) {
+        .blob-btn[disabled]:hover .blob-btn__blob {
+            transform: translate3d(0, 150%, 0) scale(1.4);
+        }
+      }
+
       .custom-scrollbar::-webkit-scrollbar {
         width: 8px;
       }
@@ -94,6 +268,66 @@
           transform: scale(1.0);
         }
       }
+      
+      /* Blinking Cursor for Typewriter */
+      .blinking-cursor::after {
+        content: '▋';
+        animation: blink 1.2s step-end infinite;
+        margin-left: 2px;
+        color: #fca5a5; /* rose-300 */
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .progress-bar-shine {
+          position: relative;
+          overflow: hidden;
+      }
+      .progress-bar-shine::after {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: linear-gradient(
+              to right,
+              rgba(255, 255, 255, 0) 0%,
+              rgba(255, 255, 255, 0.2) 50%,
+              rgba(255, 255, 255, 0) 100%
+          );
+          transform: rotate(30deg) translateX(-150%);
+          transition: transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+          pointer-events: none;
+      }
+      
+      /* Footer Icon Animation */
+      .icon-wrapper .fa-brands,
+      .icon-wrapper .fa-solid {
+          display: inline-block;
+          font-size: 1.25rem;
+          line-height: 1.25rem;
+          width: 1.25rem;
+          text-align: center;
+          color: #9ca3af; /* Initial color: gray-400 */
+          transition: color 0.3s ease-in-out;
+      }
+
+      .footer-social-links .github-link:hover .fa-github {
+          color: #ffffff;
+      }
+
+      .footer-social-links .email-link:hover .fa-envelope {
+          color: #dc2743;
+      }
+      
+      .footer-social-links .telegram-link:hover .fa-telegram {
+          color: #0088cc;
+      }
+
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -115,21 +349,18 @@
               'fade-in': 'fadeIn 0.5s ease-in-out',
               'fade-in-down': 'fadeInDown 0.5s ease-in-out',
               'fade-in-up': 'fadeInUp 0.5s ease-in-out',
-              'pulse-glow': 'pulseGlow 2s infinite ease-in-out',
               'text-gradient': 'textGradient 3s ease-in-out infinite',
+              'blink': 'blink 1.2s step-end infinite'
             },
             keyframes: {
               fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
               fadeInDown: { '0%': { opacity: 0, transform: 'translateY(-20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
               fadeInUp: { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
-              pulseGlow: {
-                '0%, 100%': { boxShadow: '0 0 15px rgba(220, 38, 38, 0.4)' },
-                '50%': { boxShadow: '0 0 30px rgba(220, 38, 38, 0.8)' },
-              },
               textGradient: {
                 '0%, 100%': { 'background-position': '0% 50%' },
                 '50%': { 'background-position': '100% 50%' },
               },
+              blink: { '50%': { opacity: 0 } },
             }
           }
         }
@@ -143,7 +374,6 @@
     "react/": "https://esm.sh/react@^19.1.0/",
     "react-hot-toast": "https://esm.sh/react-hot-toast@^2.5.2",
     "recharts": "https://esm.sh/recharts@^3.0.2",
-    "three": "https://esm.sh/three@^0.166.1",
     "@google/genai": "https://esm.sh/@google/genai",
     "react-markdown": "https://esm.sh/react-markdown@^9.0.1",
     "remark-gfm": "https://esm.sh/remark-gfm@^4.0.0"
