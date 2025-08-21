@@ -168,20 +168,20 @@ class ABOCalculator {
         
         if (analysis.O.length) {
             let key = 'error.abo.oChild_impossible';
-            const options: Record<string, any> = { child_indices: analysis.O, father, mother };
+            const options: Record<string, any> = { child_indices: analysis.O, father, mother, blood_type: 'O', allele: 'O' };
             if (!this._can_provide_abo_allele(father, 'O') && !this._can_provide_abo_allele(mother, 'O')) { key = 'error.abo.oChild_impossible_both'; }
             else if (!this._can_provide_abo_allele(father, 'O')) { key = 'error.abo.oChild_impossible_father'; }
             else if (!this._can_provide_abo_allele(mother, 'O')) { key = 'error.abo.oChild_impossible_mother'; }
             return JSON.stringify({ key, options });
         }
         if (analysis.A.length) {
-            return JSON.stringify({ key: 'error.abo.aChild_impossible', options: { child_indices: analysis.A, father, mother } });
+            return JSON.stringify({ key: 'error.abo.aChild_impossible', options: { child_indices: analysis.A, father, mother, blood_type: 'A', allele: 'A' } });
         }
         if (analysis.B.length) {
-            return JSON.stringify({ key: 'error.abo.bChild_impossible', options: { child_indices: analysis.B, father, mother } });
+            return JSON.stringify({ key: 'error.abo.bChild_impossible', options: { child_indices: analysis.B, father, mother, blood_type: 'B', allele: 'B' } });
         }
         if (analysis.AB.length) {
-            return JSON.stringify({ key: 'error.abo.abChild_impossible', options: { child_indices: analysis.AB, father, mother } });
+            return JSON.stringify({ key: 'error.abo.abChild_impossible', options: { child_indices: analysis.AB, father, mother, blood_type: 'AB', alleles: 'A and B' } });
         }
         return null;
     }
@@ -322,6 +322,8 @@ class RHCalculator {
         switch (analysis.type) {
             case 'negative_child_impossible':
                 options.parent_value = analysis.parent_value;
+                options.blood_type = 'RH-';
+                options.allele = 'd';
                 if (analysis.problematic_parent === 'father') key = 'error.rh.negative_child_impossible_father';
                 else if (analysis.problematic_parent === 'mother') key = 'error.rh.negative_child_impossible_mother';
                 else {
@@ -334,12 +336,18 @@ class RHCalculator {
                 key = 'error.rh.positive_child_impossible';
                 options.father = father;
                 options.mother = mother;
+                options.blood_type = 'RH+';
+                options.allele = 'D';
                 break;
             case 'DD_child_impossible':
                 key = 'error.rh.DD_child_impossible';
+                options.genotype = 'DD';
+                options.allele = 'D';
                 break;
             case 'Dd_child_impossible_DD_parents':
                 key = 'error.rh.Dd_child_impossible_DD_parents';
+                options.genotype = 'Dd';
+                options.parent_genotype = 'DD';
                 break;
             default:
                 return JSON.stringify({ key: "error.rh.genericIncompatibility", options: {} });
