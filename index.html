@@ -17,9 +17,7 @@
         background-color: #111827; /* brand-dark */
       }
       .site-background {
-        background-image:
-          radial-gradient(circle at 10% 15%, rgba(220, 38, 38, 0.15) 0%, transparent 35%),
-          radial-gradient(circle at 90% 85%, rgba(79, 70, 229, 0.12) 0%, transparent 40%);
+        /* Gradients removed for a simpler background */
       }
 
       /* Unified Glow Effect */
@@ -367,7 +365,6 @@
       }
     </script>
 
-<link rel="stylesheet" href="/index.css">
   <script type="importmap">
 {
   "imports": {
@@ -386,5 +383,14 @@
 </head>
   <body class="font-sans">
     <div id="root"></div>
+    <svg style="position: absolute; width: 0; height: 0; pointer-events: none;" xmlns="http://www.w3.org/2000/svg" version="1.1">
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </defs>
+    </svg>
 </body>
 </html>
