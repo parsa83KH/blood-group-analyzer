@@ -1,11 +1,18 @@
+
 {
   "appTitle": "Blood Group Analyzer",
   "appTagline": "Analyze blood type genetics and transfusion compatibility",
   "footerRights": "All Rights Reserved.",
   "footer": {
-    "developedBy": "developed by Parsa Khosravani",
+    "developedBy": "developed by",
+    "developerName": "Parsa Khosravani",
     "github": "GitHub",
-    "telegram": "Telegram"
+    "telegram": "Telegram",
+    "email": "Email"
+  },
+  "select": {
+    "phenotypes": "Phenotypes",
+    "genotypes": "Genotypes"
   },
   "unknown": "Unknown",
   "father": "Father",
@@ -25,7 +32,7 @@
     "title": "How It Works",
     "step1": {
       "title": "1. Provide Inputs",
-      "desc": "Enter the known blood types for the father, mother, and any children or if you don't know a person's blood type, you can leave it unknown. If you want the calculations for only one type of blood type (e.g., ABO only), leave the other blood type entries (i.e., RH) completely unknown; Use either phenotypes (like A+) or genotypes (like AO/Dd)."
+      "desc": "Enter the known blood types for the father, mother, and any children or if you don't know a person's blood type, you can leave it unknown to see probabilities. If you want the calculations for only one type of blood type (e.g., ABO only), leave the other blood type entries (i.e., RH) completely unknown; Use either phenotypes (like A+) or genotypes (like AO/Dd)."
     },
     "step2": {
       "title": "2. Calculate Odds",
@@ -34,7 +41,7 @@
     },
     "step3": {
       "title": "3. Understand Transfusions",
-      "desc": "The analysis also shows who can donate to whom. This is critical because an incompatible transfusion can trigger a dangerous immune response based on antigens on red blood cells."
+      "desc": "This analysis also shows who can donate blood to whom. Now, you may know the blood types of a person or people and then see who this person can donate blood to and also from whom they can receive blood, or you may not know the blood type of the person or people and want to see what the probabilities are for them to donate and receive blood."
     },
     "punnett": {
       "title": "Example: Punnett Square",
@@ -111,8 +118,8 @@
     "aboGeno": "ABO Genotype Probabilities",
     "rhPheno": "RH Phenotype Probabilities",
     "rhGeno": "RH Genotype Probabilities",
-    "hybridGeno": "Full Genotype Probabilities",
-    "hybridPheno": "Full Blood Type Probabilities",
+    "hybridGeno": "Hybrid Genotype Probabilities",
+    "hybridPheno": "Hybrid Phenotype Probabilities",
     "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Member: {{member}}\n- Analysis Type: {{chartTitle}}\n- Calculated Probabilities: {{chartData}}\n\nQUESTION: Based on the family inputs, please explain in simple terms:\n1. How were these specific probabilities calculated?\n2. What do these results tell us about the member's likely blood type?"
   },
   "transfusion": {
@@ -148,13 +155,13 @@
       "noInput": "Please enter at least one ABO blood type for analysis.",
       "impossible": "ABO Error: The provided family blood types are not genetically possible.",
       "noValidCombinations": "ABO Error: No valid genetic combinations found for the given family blood types.",
-      "oChild_impossible": "ABO Error: {{child_entity}} with blood type (O) is impossible. With parents ({{father}}) and ({{mother}}), at least one parent cannot provide the required 'O' allele.",
-      "oChild_impossible_father": "ABO Error: {{child_entity}} with blood type (O) is impossible. The father with input ({{father}}) cannot provide the required 'O' allele.",
-      "oChild_impossible_mother": "ABO Error: {{child_entity}} with blood type (O) is impossible. The mother with input ({{mother}}) cannot provide the required 'O' allele.",
-      "oChild_impossible_both": "ABO Error: {{child_entity}} with blood type (O) is impossible. Neither the father ({{father}}) nor the mother ({{mother}}) can provide the required 'O' allele.",
-      "aChild_impossible": "ABO Error: {{child_entity}} with blood type (A) is impossible. Neither parent ({{father}}, {{mother}}) can provide the required 'A' allele.",
-      "bChild_impossible": "ABO Error: {{child_entity}} with blood type (B) is impossible. Neither parent ({{father}}, {{mother}}) can provide the required 'B' allele.",
-      "abChild_impossible": "ABO Error: {{child_entity}} with blood type (AB) is impossible. The combination of parents ({{father}}, {{mother}}) cannot provide both 'A' and 'B' alleles."
+      "oChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. With parents *({{father}})* and *({{mother}})*, at least one parent cannot provide the required *'{{allele}}'* allele.",
+      "oChild_impossible_father": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. The father with input *({{father}})* cannot provide the required *'{{allele}}'* allele.",
+      "oChild_impossible_mother": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. The mother with input *({{mother}})* cannot provide the required *'{{allele}}'* allele.",
+      "oChild_impossible_both": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. Neither the father *({{father}})* nor the mother *({{mother}})* can provide the required *'{{allele}}'* allele.",
+      "aChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
+      "bChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
+      "abChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. The combination of parents (*{{father}}*, *{{mother}}*) cannot provide both *'{{alleles}}'* alleles."
     },
     "rh": {
       "invalidInput": "RH Error: Invalid Rh factor entered. Please check the inputs.",
@@ -162,12 +169,12 @@
       "noInput": "Please enter at least one RH factor for analysis.",
       "impossible": "RH Error: The provided family Rh factors are not genetically possible.",
       "genericIncompatibility": "RH Error: The children's RH blood types are genetically incompatible with the parents' blood types based on the laws of inheritance.",
-      "negative_child_impossible_father": "RH Error: {{child_entity}} with RH- blood is impossible. The father with input ({{parent_value}}) cannot provide the required 'd' allele.",
-      "negative_child_impossible_mother": "RH Error: {{child_entity}} with RH- blood is impossible. The mother with input ({{parent_value}}) cannot provide the required 'd' allele.",
-      "negative_child_impossible_both": "RH Error: {{child_entity}} with RH- blood is impossible. Both parents ({{father}}, {{mother}}) can only provide 'D' alleles.",
-      "positive_child_impossible": "RH Error: {{child_entity}} with RH+ blood is impossible. Both parents ({{father}}, {{mother}}) can only provide 'd' alleles.",
-      "DD_child_impossible": "RH Error: {{child_entity}} with genotype (DD) is impossible, as a 'D' allele cannot be provided by both parents.",
-      "Dd_child_impossible_DD_parents": "RH Error: {{child_entity}} with genotype (Dd) is impossible from two (DD) parents, who can only create (DD) offspring."
+      "negative_child_impossible_father": "__RH Error:__ *{{child_entity}}* with *{{blood_type}}* blood is impossible. The father with input *({{parent_value}})* cannot provide the required *'{{allele}}'* allele.",
+      "negative_child_impossible_mother": "__RH Error:__ *{{child_entity}}* with *{{blood_type}}* blood is impossible. The mother with input *({{parent_value}})* cannot provide the required *'{{allele}}'* allele.",
+      "negative_child_impossible_both": "__RH Error:__ *{{child_entity}}* with *{{blood_type}}* blood is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
+      "positive_child_impossible": "__RH Error:__ *{{child_entity}}* with *{{blood_type}}* blood is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
+      "DD_child_impossible": "__RH Error:__ *{{child_entity}}* with genotype *({{genotype}})* is impossible, as a *'{{allele}}'* allele cannot be provided by both parents.",
+      "Dd_child_impossible_DD_parents": "__RH Error:__ *{{child_entity}}* with genotype *({{genotype}})* is impossible from two *({{parent_genotype}})* parents, who can only create *({{parent_genotype}})* offspring."
     }
   },
   "aiAssistant": {
