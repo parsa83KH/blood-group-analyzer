@@ -130,7 +130,7 @@ This project is best experienced firsthand. Click the link below to explore its 
 </td>
 <td align="center">
   <div style="position: relative;">
-    <img src="https://capsule-render.vercel.app/api?type=rect&color=BD10E0&height=180&section=header&text=Learn%20%26%20Explore&fontSize=20&fontColor=ffffff&animation=twinkling" alt="Educational Section" width="100%">
+    <img src="https://capsule-render.vercel.app/api?type=rect&color=BD10E0&height=180&section=header&text=Learn%20Plus%20Explore&fontSize=20&fontColor=ffffff&animation=twinkling" alt="Educational Section" width="100%">
     <br><br>
     <img src="https://img.shields.io/badge/📚%20Interactive-Learning-BD10E0?style=for-the-badge&logo=graduation-cap" alt="Education Badge">
     <br><br>
@@ -170,10 +170,6 @@ This project is best experienced firsthand. Click the link below to explore its 
 **✨ Every pixel crafted with healthcare professionals and patients in mind**
 
 </div>
-
-### 🚀 **Experience the Innovation**
-
-<div align="center">
 
 ---
 
@@ -230,7 +226,7 @@ The application follows a sophisticated pipeline to turn raw user input into ins
 
 <div align="center">
 
-[![Tech Stack](https://capsule-render.vercel.app/api?type=rounded&color=gradient&height=120&section=header&text=Modern%20Tech%20Stack&fontSize=28&fontColor=ffffff&animation=twinkling)
+![Tech Stack](https://capsule-render.vercel.app/api?type=rounded&color=gradient&height=120&section=header&text=Modern%20Tech%20Stack&fontSize=28&fontColor=ffffff&animation=twinkling)
 
 </div>
 
