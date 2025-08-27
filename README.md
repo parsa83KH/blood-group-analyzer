@@ -32,7 +32,7 @@
 
 This project is best experienced firsthand. Click the link below to explore its full capabilities.
 
-**[✨ LAUNCH THE APPLICATION ✨](https://main--blood-group-analyzer.lab-pro.app.aiprompt.dev/)**
+**[✨ LAUNCH THE APPLICATION ✨](https://parsa83kh.github.io/blood-group-analyzer/)**
 
 ---
 
@@ -40,11 +40,11 @@ This project is best experienced firsthand. Click the link below to explore its 
 
 | Input Form with 3D Tilt Effect | Detailed Results with Interactive Charts | AI-Powered Genetic Error Explanation |
 | :-----------------------------: | :---------------------------------------: | :-----------------------------------: |
-| <img src="https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=3D+Input+Form" alt="Input Form" width="100%"> | <img src="https://via.placeholder.com/400x300/50E3C2/FFFFFF?text=Interactive+Charts" alt="Results Display" width="100%"> | <img src="https://via.placeholder.com/400x300/F5A623/FFFFFF?text=AI+Explanation" alt="AI Error Explanation" width="100%"> |
+| <img src="https://img.shields.io/badge/3D%20Input-Form-4A90E2?style=for-the-badge&logo=react&logoColor=white" alt="Input Form" width="100%"> | <img src="https://img.shields.io/badge/Interactive-Charts-50E3C2?style=for-the-badge&logo=chartdotjs&logoColor=white" alt="Results Display" width="100%"> | <img src="https://img.shields.io/badge/AI-Explanation-F5A623?style=for-the-badge&logo=openai&logoColor=white" alt="AI Error Explanation" width="100%"> |
 
 | AI Assistant "Geno" | Educational Section | Bilingual Support (Farsi) |
 | :------------------: | :------------------: | :------------------------: |
-| <img src="https://via.placeholder.com/400x300/7ED321/FFFFFF?text=AI+Assistant+Geno" alt="AI Assistant" width="100%"> | <img src="https://via.placeholder.com/400x300/BD10E0/FFFFFF?text=How+It+Works" alt="How It Works Section" width="100%"> | <img src="https://via.placeholder.com/400x300/B8E986/000000?text=Farsi+Support" alt="Farsi Language UI" width="100%"> |
+| <img src="https://img.shields.io/badge/AI%20Assistant-Geno-7ED321?style=for-the-badge&logo=robot&logoColor=white" alt="AI Assistant" width="100%"> | <img src="https://img.shields.io/badge/How%20It-Works-BD10E0?style=for-the-badge&logo=bookopen&logoColor=white" alt="How It Works Section" width="100%"> | <img src="https://img.shields.io/badge/Farsi-Support-B8E986?style=for-the-badge&logo=translate&logoColor=black" alt="Farsi Language UI" width="100%"> |
 
 ---
 
@@ -113,11 +113,55 @@ This project was built with a focus on performance, modern development practices
 Feel free to reach out with any questions, feedback, or collaboration ideas!
 
 -   **GitHub:** [@parsa83KH](https://github.com/parsa83KH)
--   **Email:** `parsakhosravani83@gmail.com`
+-   **Email:** [parsakhosravani83@gmail.com]("https://mail.google.com/mail/?view=cm&fs=1&to=parsakhosravani83@gmail.com&su=Blood%20Group%20Analysis%20Project&body=Hi%20Parsa,%0A%0AI%20found%20your%20Blood%20Group%20Analysis%20project%20interesting%20and%20wanted%20to%20get%20in%20touch.%0A%0ABest%20regards")
 -   **Telegram:** [@ParsaKH_83](https://t.me/ParsaKH_83)
 
 ---
 
 ## 📜 License
 
-This project is licensed under the MIT License.
+<a href="https://opensource.org/licenses/MIT">MIT License</a>
+
+MIT License
+
+Copyright © 2024 Parsa Khosravani
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+
+of this software and associated documentation files (the “Blood Group Analysis System”), to deal
+
+in the Software without restriction, including without limitation the rights
+
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+
+copies of the Software, and to permit persons to whom the Software is
+
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+
+SOFTWARE.
+
+This project includes AI-powered genetic analysis tools and should be used for
+
+educational purposes only. Medical decisions should always be made in consultation
+
+with qualified healthcare professionals.
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=header&text=Blood%20Analysis&fontSize=90&animation=fadeIn" alt="Header animation" width="80%">
+</p>
