@@ -23,7 +23,7 @@
 	"rh": "RH",
 	"aboHelper": "فنوتیپ (مثلا A) یا ژنوتیپ (مثلا AA)",
 	"rhHelper": "فنوتیپ (مثلا +) یا ژنوتیپ (مثلا DD)",
-	"analyze": "تحلیل گروه خونی",
+	"analyze": "تحلیل",
 	"analyzing": "در حال تحلیل...",
 	"loading": "در حال انجام تحلیل ژنتیکی...",
 	"memberAnalysisTitle": "تحلیل {{member}}",
