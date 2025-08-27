@@ -1,7 +1,10 @@
 # 🩸 Blood Group Analyzer 🧬
 
 <p align="center">
-  <img src="https://media.giphy.com/media/UvE0a2m6aIsQo/giphy.gif" alt="Blood cells animation" width="80%">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=36BCF7&center=true&vCenter=true&width=435&lines=Blood+Group+Analysis+System;AI-Powered+Genetic+Testing;Welcome+to+the+Future!" alt="Typing animation" width="80%">
+</p>
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=header&text=Blood%20Analysis&fontSize=90&animation=fadeIn" alt="Header animation" width="80%">
 </p>
 
 <p align="center">
