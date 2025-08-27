@@ -75,6 +75,8 @@
         z-index: 1;
         position: relative;
         padding: 1rem 2.5rem;
+        min-width: 200px;
+        min-height: 58px;
         text-align: center;
         text-transform: uppercase;
         color: #4f46e5; /* brand-accent */
@@ -97,6 +99,7 @@
         height: 100%;
         border: 2px solid #4f46e5; /* brand-accent */
         border-radius: 30px;
+        transition: all 0.3s;
       }
       .blob-btn:after {
         content: "";
@@ -183,6 +186,97 @@
             transform: translate3d(0, 150%, 0) scale(1.4);
         }
       }
+      
+      /* Button State Animations */
+      .blob-btn .content-wrapper {
+        display: grid;
+        place-items: center;
+      }
+      .blob-btn .content-wrapper > * {
+        transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        grid-column: 1;
+        grid-row: 1;
+      }
+      .blob-btn .loading-content,
+      .blob-btn .success-content,
+      .blob-btn .error-content {
+        opacity: 0;
+        transform: scale(0.5);
+        pointer-events: none;
+      }
+      .blob-btn.state-loading .default-content,
+      .blob-btn.state-success .default-content,
+      .blob-btn.state-error .default-content {
+        opacity: 0;
+        transform: scale(0.5);
+        pointer-events: none;
+      }
+      .blob-btn.state-loading .loading-content,
+      .blob-btn.state-success .success-content,
+      .blob-btn.state-error .error-content {
+        opacity: 1;
+        transform: scale(1);
+        pointer-events: auto;
+      }
+
+      .blob-btn.state-success:before { border-color: #4ade80; }
+      .blob-btn.state-error:before { border-color: #f87171; }
+      .blob-btn.state-success .blob-btn__blob { background: #4ade80; }
+      .blob-btn.state-error .blob-btn__blob { background: #f87171; }
+      .blob-btn.state-success .blob-btn__blob,
+      .blob-btn.state-error .blob-btn__blob {
+        transform: translateZ(0) scale(1.7);
+      }
+      @supports(filter: url('#goo')) {
+        .blob-btn.state-success .blob-btn__blob,
+        .blob-btn.state-error .blob-btn__blob {
+          transform: translateZ(0) scale(1.4);
+        }
+      }
+
+      /* Checkmark animation */
+      .checkmark { width: 40px; height: 40px; }
+      .checkmark__circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 3;
+        stroke-miterlimit: 10;
+        stroke: #4ade80; /* green-400 */
+        fill: none;
+        animation: checkmark-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+      .checkmark__check {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke-width: 4;
+        stroke: #fff;
+        animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+      }
+
+      /* Crossmark animation */
+      .crossmark { width: 40px; height: 40px; }
+      .crossmark__circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 3;
+        stroke-miterlimit: 10;
+        stroke: #f87171; /* red-400 */
+        fill: none;
+        animation: checkmark-stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+      }
+      .crossmark__line1, .crossmark__line2 {
+        transform-origin: 50% 50%;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        stroke-width: 4;
+        stroke: #fff;
+      }
+      .crossmark__line1 { animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards; }
+      .crossmark__line2 { animation: checkmark-stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards; }
+
+      @keyframes checkmark-stroke { 100% { stroke-dashoffset: 0; } }
+      
 
       .custom-scrollbar::-webkit-scrollbar {
         width: 8px;
@@ -206,10 +300,11 @@
       }
       .markdown-content strong {
         font-weight: 700;
-        color: #fca5a5;
+        color: #f87171;
       }
       .markdown-content em {
         font-style: italic;
+        color: #facc15; /* yellow-400 */
       }
       .markdown-content code {
         background-color: #374151;
@@ -242,6 +337,43 @@
       .markdown-content a:hover {
         color: #93c5fd;
       }
+      .markdown-content > *:first-child {
+        margin-top: 0;
+      }
+      .markdown-content h1, .markdown-content h2, .markdown-content h3, .markdown-content h4, .markdown-content h5, .markdown-content h6 {
+        font-weight: 700;
+        margin-top: 1.2em;
+        margin-bottom: 0.6em;
+        padding-bottom: 0.3em;
+        border-bottom: 1px solid #374151; /* gray-700 */
+      }
+      .markdown-content h1 { font-size: 1.8em; color: #fca5a5; } /* red-300 (light red) for # */
+      .markdown-content h2 { font-size: 1.5em; color: #f87171; } /* red-400 (darker red) for ## */
+      .markdown-content h3 { font-size: 1.25em; color: #ef4444; } /* red-500 (darkest red) for ### */
+      .markdown-content h4 { font-size: 1.1em; color: #fecaca; } /* red-200 */
+      .markdown-content h5, .markdown-content h6 { font-size: 1em; color: #e5e7eb; border-bottom: none; } /* gray-200 */
+
+      .markdown-content blockquote {
+        margin-left: 0;
+        padding-left: 1.5em;
+        border-left: 4px solid #4f46e5; /* brand-accent */
+        background-color: rgba(79, 70, 229, 0.1);
+        color: #d1d5db; /* gray-300 */
+        font-style: italic;
+        border-radius: 0 8px 8px 0;
+        padding-top: 0.5em;
+        padding-bottom: 0.5em;
+        padding-right: 1em;
+      }
+      .markdown-content blockquote p { margin-bottom: 0; }
+      
+      .markdown-content hr {
+        border: 0;
+        height: 1px;
+        background-color: #374151; /* gray-700 */
+        margin-block: 2em;
+      }
+
       /* Loading dots animation for AI Assistant */
       .loading-dots span {
         animation: dot-bounce 1.4s infinite ease-in-out both;
@@ -379,7 +511,7 @@
   }
 }
 </script>
-  <script type="module" crossorigin src="/blood-group-analyzer/assets/index-DSxvOW52.js"></script>
+  <script type="module" crossorigin src="/blood-group-analyzer/assets/index-CX2E_FLp.js"></script>
 </head>
   <body class="font-sans">
     <div id="root"></div>
