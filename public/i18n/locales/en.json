@@ -23,7 +23,7 @@
   "rh": "RH",
   "aboHelper": "Phenotype (e.g. A) or Genotype (e.g. AA)",
   "rhHelper": "Phenotype (e.g. +) or Genotype (e.g. DD)",
-  "analyze": "Analyze Blood Group",
+  "analyze": "Analyze",
   "analyzing": "Analyzing...",
   "loading": "Performing Genetic Analysis...",
   "memberAnalysisTitle": "{{member}} Analysis",

@@ -37,11 +37,11 @@ This project is best experienced firsthand. Click the link below to explore its 
 
 | Input Form with 3D Tilt Effect | Detailed Results with Interactive Charts | AI-Powered Genetic Error Explanation |
 | :-----------------------------: | :---------------------------------------: | :-----------------------------------: |
-| <img src="https://i.imgur.com/uR2B4xO.png" alt="Input Form" width="100%"> | <img src="https://i.imgur.com/1Gj2sZL.png" alt="Results Display" width="100%"> | <img src="https://i.imgur.com/rN5wR4d.png" alt="AI Error Explanation" width="100%"> |
+| <img src="https://via.placeholder.com/400x300/4A90E2/FFFFFF?text=3D+Input+Form" alt="Input Form" width="100%"> | <img src="https://via.placeholder.com/400x300/50E3C2/FFFFFF?text=Interactive+Charts" alt="Results Display" width="100%"> | <img src="https://via.placeholder.com/400x300/F5A623/FFFFFF?text=AI+Explanation" alt="AI Error Explanation" width="100%"> |
 
 | AI Assistant "Geno" | Educational Section | Bilingual Support (Farsi) |
 | :------------------: | :------------------: | :------------------------: |
-| <img src="https://i.imgur.com/XwSjBq0.png" alt="AI Assistant" width="100%"> | <img src="https://i.imgur.com/0F9kKz8.png" alt="How It Works Section" width="100%"> | <img src="https://i.imgur.com/0P6Bq9o.png" alt="Farsi Language UI" width="100%"> |
+| <img src="https://via.placeholder.com/400x300/7ED321/FFFFFF?text=AI+Assistant+Geno" alt="AI Assistant" width="100%"> | <img src="https://via.placeholder.com/400x300/BD10E0/FFFFFF?text=How+It+Works" alt="How It Works Section" width="100%"> | <img src="https://via.placeholder.com/400x300/B8E986/000000?text=Farsi+Support" alt="Farsi Language UI" width="100%"> |
 
 ---
 
