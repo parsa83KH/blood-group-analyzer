@@ -12,34 +12,39 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, active, speed = 50, class
     const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
-        let typingTimeout: ReturnType<typeof setTimeout>;
+        let timeoutId: ReturnType<typeof setTimeout>;
 
-        if (active) {
-            // Typing forward
-            if (displayedText.length < text.length) {
-                setIsProcessing(true);
-                typingTimeout = setTimeout(() => {
-                    setDisplayedText(text.substring(0, displayedText.length + 1));
-                }, speed);
-            } else {
-                setIsProcessing(false);
-            }
-        } else {
-            // "Typing" backward (deleting)
-            if (displayedText.length > 0) {
-                 setIsProcessing(true);
-                 typingTimeout = setTimeout(() => {
-                     setDisplayedText(displayedText.substring(0, displayedText.length - 1));
-                 }, speed / 2); // Delete faster
-            } else {
-                 setIsProcessing(false);
-            }
+        // Determine the target text based on active state
+        const targetText = active ? text : '';
+
+        // If we are already at the target, ensure processing state is false and stop.
+        if (displayedText === targetText) {
+            if (isProcessing) setIsProcessing(false);
+            return;
         }
 
-        return () => clearTimeout(typingTimeout);
-    }, [displayedText, text, active, speed]);
+        // We need to type or delete, so ensure processing state is true.
+        if (!isProcessing) setIsProcessing(true);
+
+        // Determine if we are adding or removing characters
+        const shouldAdd = targetText.length > displayedText.length;
+        const nextText = shouldAdd
+            ? targetText.substring(0, displayedText.length + 1) // Add next character
+            : displayedText.substring(0, displayedText.length - 1); // Remove last character
+
+        const currentSpeed = shouldAdd ? speed : speed / 2; // Delete faster
+
+        // Set timeout for the next character change
+        timeoutId = setTimeout(() => {
+            setDisplayedText(nextText);
+        }, currentSpeed);
+
+        // Cleanup function to clear timeout on re-render
+        return () => clearTimeout(timeoutId);
+
+    }, [displayedText, text, active, speed, isProcessing]);
     
-    // Don't render anything if there's no text and we're not in the middle of an animation
+    // Don't render anything if there's no text and we're not processing
     if (displayedText.length === 0 && !isProcessing) {
         return null;
     }

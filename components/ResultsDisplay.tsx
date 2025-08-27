@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { FamilyAnalysisResult, MemberAnalysisResult, ProbabilityMap, Person } from '../types';
 import Card from './ui/Card';
 import AnimatedPieChart from './AnimatedPieChart';
@@ -36,36 +38,45 @@ const getMemberName = (name: string, t: (key: string, options?: Record<string, s
     return name;
 };
 
-// Component to parse and style the error messages with highlighted parts
-const FormattedErrorMessage: React.FC<{ message: string }> = ({ message }) => {
-    // Split the message by custom delimiters (__...__ for titles, *...* for highlights)
-    const parts = message.split(/(__.*?__|\*.*?\*)/g).filter(Boolean);
+// Helper function to detect RTL text
+const isRTL = (text: string): boolean => {
+    if (!text) return false;
+    const rtlRegex = /[\u0600-\u06FF]/;
+    return rtlRegex.test(text);
+};
+
+const AIExplanation: React.FC<{ text: string }> = ({ text }) => {
+    const [displayedText, setDisplayedText] = useState('');
+
+    useEffect(() => {
+        setDisplayedText(''); // Reset on new text
+    }, [text]);
+
+    useEffect(() => {
+        if (displayedText.length < text.length) {
+            const timeoutId = setTimeout(() => {
+                const nextLength = Math.min(displayedText.length + 25, text.length);
+                setDisplayedText(text.slice(0, nextLength));
+            }, 5);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [displayedText, text]);
+
+    const isTyping = displayedText.length < text.length;
+    const messageIsRtl = isRTL(text);
+    const messageDir = messageIsRtl ? 'rtl' : 'ltr';
+    const fontClass = messageIsRtl ? 'font-persian' : '';
 
     return (
-        <>
-            {parts.map((part, i) => {
-                if (part.startsWith('__') && part.endsWith('__')) {
-                    // Style for titles like "ABO Error:"
-                    return (
-                        <span key={i} className="font-bold text-red-400 mr-2">
-                            {part.substring(2, part.length - 2)}
-                        </span>
-                    );
-                }
-                if (part.startsWith('*') && part.endsWith('*')) {
-                     // Style for highlighted keywords
-                    return (
-                        <strong key={i} className="text-rose-300 bg-rose-900/50 rounded px-1.5 py-0.5 font-mono font-bold not-italic mx-0.5">
-                            {part.substring(1, part.length - 1)}
-                        </strong>
-                    );
-                }
-                // Regular text part
-                return <span key={i}>{part}</span>;
-            })}
-        </>
+        <div
+            className={`bg-gray-800 text-gray-300 p-3 rounded-xl markdown-content ${fontClass} ${isTyping ? 'blinking-cursor' : ''}`}
+            dir={messageDir}
+        >
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{displayedText || '\u00A0'}</ReactMarkdown>
+        </div>
     );
 };
+
 
 interface ProbabilityDisplayBlockProps {
     title: string;
@@ -185,12 +196,14 @@ interface ResultsDisplayProps {
     memberAnalyses: MemberAnalysisResult[];
     family: Person[];
     onAskAI: (prompt: string) => void;
+    isAiExplaining: boolean;
 }
 
-const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResult, memberAnalyses, family, onAskAI }) => {
+const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResult, memberAnalyses, family, onAskAI, isAiExplaining }) => {
     const { t } = useLanguage();
     const [selectedMember, setSelectedMember] = useState<string | null>(null);
     const [isStickyActive, setIsStickyActive] = useState(false);
+    const [loadingTextIndex, setLoadingTextIndex] = useState(0);
     const memberSelectorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -201,6 +214,19 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
         }
     }, [memberAnalyses]);
     
+     useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
+        if (isAiExplaining) {
+            const loadingTexts = t('aiErrorLoadingTexts', { returnObjects: true }) as string[];
+            interval = setInterval(() => {
+                setLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
+            }, 1500); // Change text every 1.5 seconds
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isAiExplaining, t]);
+
     useEffect(() => {
         const selectorElement = memberSelectorRef.current;
         if (!selectorElement || memberAnalyses.length === 0) return;
@@ -235,77 +261,43 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
     if (!analysisResult) return null;
 
     if (analysisResult.errors && analysisResult.errors.length > 0) {
-        const familyInputs = formatFamilyForPrompt(family, t);
-
-        const combinedErrorMessages = analysisResult.errors.map(error => {
-            let message = t(error);
-            try {
-                const errObj = JSON.parse(error);
-                if (errObj.key && errObj.options) {
-                    const finalOptions = { ...errObj.options };
-                    if (Array.isArray(finalOptions.child_indices) && finalOptions.child_indices.length > 0) {
-                        const indices: number[] = finalOptions.child_indices;
-                        if (indices.length > 1) {
-                            finalOptions.child_entity = t('error.entities.children_list', { list: indices.join(', ') });
-                        } else {
-                            finalOptions.child_entity = t('error.entities.child_single', { number: indices[0] });
-                        }
-                        delete finalOptions.child_indices;
-                    }
-                    message = t(errObj.key, finalOptions);
-                }
-            } catch (e) { /* Not a JSON error string */ }
-            return message;
-        }).join('\n');
-
-        const errorPrompt = t('error.aiPrompt', {
-            familyInputs: familyInputs,
-            error: combinedErrorMessages,
-        });
+        const isAiLoading = analysisResult.errors[0] === 'ai_loading_placeholder';
+        const loadingTexts = t('aiErrorLoadingTexts', { returnObjects: true }) as string[];
+        const currentLoadingText = loadingTexts[loadingTextIndex];
         
         return (
-            <div className="relative group mt-8">
+            <div className="mt-8">
                 <Card 
-                    className="text-center border-red-500/50 bg-gray-900/50 animate-fade-in"
+                    className="border-red-500/50 bg-gray-900/50 animate-fade-in"
                 >
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <WarningIcon className="h-12 w-12 text-red-400 flex-shrink-0" />
-                        <div>
-                            <h3 className="text-2xl font-bold text-red-400 mb-2">{t('error.title')}</h3>
-                            <div className="space-y-2">
-                              {analysisResult.errors.map((error, i) => {
-                                  let message = t(error);
-                                  try {
-                                      const errObj = JSON.parse(error);
-                                      if (errObj.key && errObj.options) {
-                                          const finalOptions = { ...errObj.options };
-                                          if (Array.isArray(finalOptions.child_indices) && finalOptions.child_indices.length > 0) {
-                                              const indices: number[] = finalOptions.child_indices;
-                                              if (indices.length > 1) {
-                                                  finalOptions.child_entity = t('error.entities.children_list', { list: indices.join(', ') });
-                                              } else {
-                                                  finalOptions.child_entity = t('error.entities.child_single', { number: indices[0] });
-                                              }
-                                              delete finalOptions.child_indices;
-                                          }
-                                          message = t(errObj.key, finalOptions);
-                                      }
-                                  } catch (e) { /* Fallback to default message */ }
-                                  return (
-                                    <p key={i} className="text-red-300 ltr:text-left rtl:text-right text-sm sm:text-base leading-relaxed">
-                                        <FormattedErrorMessage message={message} />
-                                    </p>
-                                  );
-                              })}
-                            </div>
+                     <h3 className="flex items-center justify-center gap-3 text-2xl font-bold text-red-400 mb-4">
+                        <WarningIcon className="h-8 w-8" />
+                        <span>{t('error.title')}</span>
+                    </h3>
+                    <div className="space-y-2 min-h-[4rem] flex flex-col justify-center">
+                      {isAiLoading ? (
+                        <div className="text-gray-400 animate-fade-in flex items-center justify-center gap-3">
+                           <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                           </svg>
+                            <p>{currentLoadingText}</p>
                         </div>
+                      ) : (
+                         <div className="text-white text-sm sm:text-base leading-relaxed animate-fade-in">
+                            {analysisResult.errors.map((error, i) => {
+                                const translatedError = t(error);
+                                // Heuristic: AI explanations are raw text (t(err) === err) and usually long.
+                                const isAiExplanation = translatedError === error && error.length > 50;
+                                if (isAiExplanation) {
+                                    return <AIExplanation key={i} text={error} />;
+                                }
+                                return <p key={i}>{translatedError}</p>;
+                            })}
+                        </div>
+                      )}
                     </div>
                 </Card>
-                <AskAIButton
-                    prompt={errorPrompt}
-                    onAsk={onAskAI}
-                    className="top-2 right-2 rtl:left-2 rtl:right-auto"
-                />
             </div>
         );
     }

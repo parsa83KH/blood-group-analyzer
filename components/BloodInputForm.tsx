@@ -11,9 +11,10 @@ interface BloodInputFormProps {
     setFamily: React.Dispatch<React.SetStateAction<Person[]>>;
     onAnalyze: () => void;
     isLoading: boolean;
+    analysisCompletionStatus: 'idle' | 'success' | 'error';
 }
 
-const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAnalyze, isLoading }) => {
+const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAnalyze, isLoading, analysisCompletionStatus }) => {
     const { t } = useLanguage();
     const memberBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -151,9 +152,14 @@ const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAn
                 </button>
             </div>
             <div className="mt-8 text-center">
-                <Button onClick={onAnalyze} disabled={isLoading} isLoading={isLoading}>
+                <Button 
+                    onClick={onAnalyze} 
+                    disabled={isLoading || analysisCompletionStatus !== 'idle'} 
+                    isLoading={isLoading} 
+                    analysisCompletionStatus={analysisCompletionStatus}
+                >
                     <BeakerIcon className="h-5 w-5 rtl:ml-2 ltr:mr-2"/>
-                    {isLoading ? t('analyzing') : t('analyze')}
+                    {t('analyze')}
                 </Button>
             </div>
         </Card>

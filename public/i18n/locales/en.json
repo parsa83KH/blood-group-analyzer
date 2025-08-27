@@ -140,6 +140,8 @@
   },
   "error": {
     "title": "Analysis Failed",
+    "summaryTitle": "Summary",
+    "detailsTitle": "Detailed Explanation",
     "unexpected": "An unexpected error occurred during analysis. Please check your inputs and try again.",
     "unexpectedDetailed": "Error analyzing blood types: {{error}}",
     "allUnknown": "Please enter at least one blood type for analysis.",
@@ -176,6 +178,18 @@
       "Dd_child_impossible_DD_parents": "__RH Error:__ *{{child_entity}}* with genotype *({{genotype}})* is impossible from two *({{parent_genotype}})* parents, who can only create *({{parent_genotype}})* offspring."
     }
   },
+  "aiErrorLoadingTexts": [
+    "Analyzing genetic inconsistencies...",
+    "Consulting with genetic models...",
+    "Cross-referencing inheritance patterns...",
+    "Formulating a detailed explanation...",
+    "Checking Punnett square possibilities...",
+    "Reviewing Mendelian laws...",
+    "The combination appears to be complex...",
+    "Pinpointing the source of the anomaly...",
+    "Finalizing the genetic report...",
+    "Just a moment longer..."
+  ],
   "aiAssistant": {
     "title": "Ask Geno, Your AI Blood Expert",
     "placeholder": "Ask any question...",

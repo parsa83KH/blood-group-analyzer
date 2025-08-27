@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
+import { GoogleGenAI } from '@google/genai';
 import { Person, FamilyAnalysisResult, MemberAnalysisResult, AIAssistantHandle } from './types';
 import BloodInputForm from './components/BloodInputForm';
 import ResultsDisplay from './components/ResultsDisplay';
@@ -10,6 +11,8 @@ import { useLanguage } from './i18n/LanguageContext';
 import AnimatedSection from './components/ui/AnimatedSection';
 import AIAssistant from './components/AIAssistant';
 
+type AnalysisCompletionStatus = 'idle' | 'success' | 'error';
+
 const App: React.FC = () => {
     const { language, t } = useLanguage();
     const [family, setFamily] = useState<Person[]>([
@@ -19,7 +22,10 @@ const App: React.FC = () => {
     const [analysisResult, setAnalysisResult] = useState<FamilyAnalysisResult | null>(null);
     const [memberAnalyses, setMemberAnalyses] = useState<MemberAnalysisResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isAiExplaining, setIsAiExplaining] = useState(false);
     const [showHowItWorks, setShowHowItWorks] = useState(false);
+    const [analysisCompletionStatus, setAnalysisCompletionStatus] = useState<AnalysisCompletionStatus>('idle');
+    const [resultKey, setResultKey] = useState(0);
 
     const aiAssistantRef = useRef<AIAssistantHandle>(null);
     const aiSectionRef = useRef<HTMLDivElement>(null);
@@ -30,45 +36,125 @@ const App: React.FC = () => {
         document.body.classList.toggle('font-persian', language === 'fa');
         document.body.classList.toggle('font-sans', language !== 'fa');
     }, [language]);
+    
+    useEffect(() => {
+        if (analysisCompletionStatus === 'success' || analysisCompletionStatus === 'error') {
+            const timer = setTimeout(() => {
+                setAnalysisCompletionStatus('idle');
+            }, 2500); // Revert button state after 2.5 seconds
+            return () => clearTimeout(timer);
+        }
+    }, [analysisCompletionStatus]);
 
 
     const handleAnalysis = useCallback(async () => {
         setIsLoading(true);
+        setAnalysisCompletionStatus('idle');
+        setResultKey(k => k + 1); // Force re-mount of results display
         setAnalysisResult(null);
         setMemberAnalyses([]);
+        setIsAiExplaining(false);
 
-        setTimeout(() => {
-            try {
-                const calculator = new BloodTypeCalculator();
-                const father = family[0];
-                const mother = family[1];
-                const children = family.slice(2);
+        try {
+            const calculator = new BloodTypeCalculator();
+            const father = family[0];
+            const mother = family[1];
+            const children = family.slice(2);
 
-                const familyResult = calculator.analyze_family(father, mother, children);
-                setAnalysisResult(familyResult);
+            let familyResult = calculator.analyze_family(father, mother, children);
 
-                if (familyResult.valid) {
-                    const membersToAnalyze = ['father', 'mother', ...children.map((_, i) => `child${i + 1}`)];
-                    const results = membersToAnalyze.map(memberIdentifier => {
-                        return calculator.analyze_member_probabilities(memberIdentifier, familyResult);
-                    });
-                    setMemberAnalyses(results);
+            if (!familyResult.valid && familyResult.errors.length > 0) {
+                setAnalysisCompletionStatus('error');
+                const aiErrors = familyResult.errors.map(err => {
+                    try {
+                        const parsed = JSON.parse(err);
+                        if (parsed.type === 'ai_explanation_required') return parsed;
+                    } catch (e) { /* not a JSON error */ }
+                    return null;
+                }).filter(Boolean);
+
+                if (aiErrors.length > 0) {
+                    setAnalysisResult({ ...familyResult, errors: ["ai_loading_placeholder"] });
+                    setIsAiExplaining(true);
+                    
+                    const fetchExplanation = async () => {
+                        try {
+                            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+                        
+                            const formatPersonForPrompt = (p: Person, name: string) => `${name}: ABO=${p.ABO}, RH=${p.RH}`;
+                            const familyInputsString = [
+                                formatPersonForPrompt(father, t('father')),
+                                formatPersonForPrompt(mother, t('mother')),
+                                ...children.map((c, i) => formatPersonForPrompt(c, `${t('child')} ${i + 1}`))
+                            ].join('\n');
+                            
+                            const systems = [...new Set(aiErrors.map(e => e.system))].join(language === 'fa' ? ' و ' : ' and ');
+                            
+                            const prompt = `You are a world-class expert in human blood genetics. Given the following family blood types, explain the genetic incompatibility in the ${systems} system(s).
+
+**Response Structure:**
+- Start with a "### Summary" section containing a brief, one or two-sentence explanation of the core problem.
+- Follow with a "### Detailed Explanation" section for a comprehensive analysis.
+
+**Formatting Rules:**
+- Respond ONLY in ${language === 'fa' ? 'Persian (Farsi)' : 'English'}.
+- Use Markdown headings (e.g., ### Summary).
+- Use double asterisks for bolding key terms (e.g., **genotype**, **allele**).
+- When referring to ABO genotypes, use the standard two-letter format (e.g., **AO**, **BB**, **OO**). Do NOT use superscript notations like Iᴬ or i.
+- Be direct and scientific. Do not add conversational filler, greetings, or conclusions.
+
+**Family Inputs:**
+${familyInputsString}`;
+
+                            const response = await ai.models.generateContent({
+                                model: 'gemini-2.5-flash',
+                                contents: prompt
+                            });
+
+                            const aiExplanation = response.text || '';
+                            setAnalysisResult(prev => ({ ...prev!, errors: [aiExplanation] }));
+                        } catch (error) {
+                             console.error("AI explanation fetch failed:", error);
+                             setAnalysisResult(prev => ({...prev!, errors: [t('aiAssistant.error')]}));
+                        } finally {
+                             setIsAiExplaining(false);
+                        }
+                    };
+                    
+                    fetchExplanation();
+                    return;
                 }
-            } catch (error: any) {
-                console.error("Analysis failed:", error);
-                setAnalysisResult({
-                    valid: false,
-                    errors: ['error.unexpected'],
-                    abo_result: { valid: false, errors: [], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] },
-                    rh_result: { valid: false, errors: [], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] },
-                    abo_valid: false,
-                    rh_valid: false
-                });
-            } finally {
-                setIsLoading(false);
             }
-        }, 100);
-    }, [family]);
+            
+            setAnalysisResult(familyResult);
+
+            if (familyResult.valid) {
+                setAnalysisCompletionStatus('success');
+                const membersToAnalyze = ['father', 'mother', ...children.map((_, i) => `child${i + 1}`)];
+                const results = membersToAnalyze.map(memberIdentifier => {
+                    return calculator.analyze_member_probabilities(memberIdentifier, familyResult);
+                });
+                setMemberAnalyses(results);
+            }
+        } catch (error: any) {
+            console.error("Analysis failed:", error);
+            setAnalysisCompletionStatus('error');
+            const errorMessage = error.message && error.message.includes('API') 
+                ? t('aiAssistant.error') 
+                : t('error.unexpected');
+
+            setAnalysisResult({
+                valid: false,
+                errors: [errorMessage],
+                abo_result: { valid: false, errors: [], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] },
+                rh_result: { valid: false, errors: [], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] },
+                abo_valid: false,
+                rh_valid: false
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [family, t, language]);
 
     const handleAskAI = (prompt: string) => {
         if (aiAssistantRef.current) {
@@ -135,16 +221,19 @@ const App: React.FC = () => {
                             setFamily={setFamily}
                             onAnalyze={handleAnalysis}
                             isLoading={isLoading}
+                            analysisCompletionStatus={analysisCompletionStatus}
                         />
                     </AnimatedSection>
                     
                     <AnimatedSection>
                         <ResultsDisplay
+                            key={resultKey}
                             isLoading={isLoading}
                             analysisResult={analysisResult}
                             memberAnalyses={memberAnalyses}
                             family={family}
                             onAskAI={handleAskAI}
+                            isAiExplaining={isAiExplaining}
                         />
                     </AnimatedSection>
                     

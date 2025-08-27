@@ -9,10 +9,16 @@ interface LanguageFiles {
 
 type Language = 'en' | 'fa';
 
+// Fix: Define TFunction type with overloads for better type inference, allowing `returnObjects: true`.
+type TFunction = {
+    (key: string, options: { returnObjects: true } & Record<string, any>): any;
+    (key: string, options?: Record<string, string | number>): string;
+};
+
 interface LanguageContextType {
     language: Language;
     setLanguage: (language: Language) => void;
-    t: (key: string, options?: Record<string, string | number>) => string;
+    t: TFunction;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -45,19 +51,30 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
         loadTranslations();
     }, []);
 
-    const t = (key: string, options?: Record<string, string | number>): string => {
+    // Fix: Implement `t` function to match the TFunction overloads.
+    const t: TFunction = (key: string, options?: any): any => {
         if (!translations) {
             return key; // Return key as fallback during loading
         }
         
         const langFile = translations[language];
-        let text: string = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), langFile);
+        let value: any = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), langFile);
 
-        if (text === undefined || text === null) {
+        if (value === undefined || value === null) {
             // Fallback to English if translation is missing in the current language
             const fallbackLangFile = translations.en;
-            text = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), fallbackLangFile) || key;
+            value = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), fallbackLangFile) || key;
         }
+
+        if (options?.returnObjects) {
+            return value;
+        }
+
+        if (typeof value !== 'string') {
+            return key; // Fallback to key if the value is not a string and we are not returning an object.
+        }
+        
+        let text = value;
 
         if (text && options) {
             Object.keys(options).forEach((k) => {

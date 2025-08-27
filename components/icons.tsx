@@ -1,6 +1,3 @@
-
-
-
 import React from 'react';
 
 type IconProps = React.SVGProps<SVGSVGElement>;
@@ -114,5 +111,20 @@ export const CheckIcon: React.FC<IconProps> = (props) => (
 export const ChevronUpDownIcon: React.FC<IconProps> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
+    </svg>
+);
+
+export const AnimatedCheckIcon: React.FC<IconProps> = (props) => (
+    <svg className="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" {...props}>
+        <circle className="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path className="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+    </svg>
+);
+
+export const AnimatedCrossIcon: React.FC<IconProps> = (props) => (
+     <svg className="crossmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52" {...props}>
+        <circle className="crossmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path className="crossmark__line1" fill="none" d="M16 16 36 36"/>
+        <path className="crossmark__line2" fill="none" d="M36 16 16 36"/>
     </svg>
 );

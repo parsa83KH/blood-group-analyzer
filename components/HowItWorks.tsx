@@ -1,7 +1,3 @@
-
-
-
-
 import React from 'react';
 import Card from './ui/Card';
 import { useLanguage } from '../i18n/LanguageContext';

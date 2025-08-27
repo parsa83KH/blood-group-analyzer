@@ -87,7 +87,7 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
 
             let accumulatedText = '';
             for await (const chunk of responseStream) {
-                accumulatedText += chunk.text;
+                accumulatedText += chunk.text || '';
                 setMessages(prev => {
                     const lastMessageIndex = prev.length - 1;
                     const updatedMessages = [...prev];
