@@ -40,7 +40,7 @@ This project is best experienced firsthand. Click the link below to explore its 
 
 <div align="center">
 
-[![Visual Showcase](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=header&text=🎬%20Visual%20Experience&fontSize=28&fontColor=ffffff&animation=fadeIn)
+![Visual Showcase](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=header&text=🎬%20Visual%20Experience&fontSize=28&fontColor=ffffff&animation=fadeIn)
 
 <p><em>Explore the stunning interface that makes genetic analysis both beautiful and accessible</em></p>
 
