@@ -61,36 +61,39 @@ const App: React.FC = () => {
             const mother = family[1];
             const children = family.slice(2);
 
-            let familyResult = calculator.analyze_family(father, mother, children);
+            const familyResult = calculator.analyze_family(father, mother, children);
 
-            if (!familyResult.valid && familyResult.errors.length > 0) {
+            // Prioritize checking for AI-explainable genetic impossibilities.
+            // This is crucial because a result can have `valid: true` (if one system like ABO is valid)
+            // but still contain a genetic error in another system (like RH) that needs explanation.
+            const aiErrors = (familyResult.errors || []).map(err => {
+                try {
+                    const parsed = JSON.parse(err);
+                    if (parsed.type === 'ai_explanation_required') return parsed;
+                } catch (e) { /* not a JSON error */ }
+                return null;
+            }).filter(Boolean);
+
+            if (aiErrors.length > 0) {
                 setAnalysisCompletionStatus('error');
-                const aiErrors = familyResult.errors.map(err => {
+                // Force the result to be invalid and show a loading state for the AI explanation.
+                setAnalysisResult({ ...familyResult, valid: false, errors: ["ai_loading_placeholder"] });
+                setIsAiExplaining(true);
+                
+                await (async () => {
                     try {
-                        const parsed = JSON.parse(err);
-                        if (parsed.type === 'ai_explanation_required') return parsed;
-                    } catch (e) { /* not a JSON error */ }
-                    return null;
-                }).filter(Boolean);
-
-                if (aiErrors.length > 0) {
-                    setAnalysisResult({ ...familyResult, errors: ["ai_loading_placeholder"] });
-                    setIsAiExplaining(true);
+                        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
                     
-                    const fetchExplanation = async () => {
-                        try {
-                            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+                        const formatPersonForPrompt = (p: Person, name: string) => `${name}: ABO=${p.ABO}, RH=${p.RH}`;
+                        const familyInputsString = [
+                            formatPersonForPrompt(father, t('father')),
+                            formatPersonForPrompt(mother, t('mother')),
+                            ...children.map((c, i) => formatPersonForPrompt(c, `${t('child')} ${i + 1}`))
+                        ].join('\n');
                         
-                            const formatPersonForPrompt = (p: Person, name: string) => `${name}: ABO=${p.ABO}, RH=${p.RH}`;
-                            const familyInputsString = [
-                                formatPersonForPrompt(father, t('father')),
-                                formatPersonForPrompt(mother, t('mother')),
-                                ...children.map((c, i) => formatPersonForPrompt(c, `${t('child')} ${i + 1}`))
-                            ].join('\n');
-                            
-                            const systems = [...new Set(aiErrors.map(e => e.system))].join(language === 'fa' ? ' و ' : ' and ');
-                            
-                            const prompt = `You are a world-class expert in human blood genetics. Given the following family blood types, explain the genetic incompatibility in the ${systems} system(s).
+                        const systems = [...new Set(aiErrors.map(e => e.system))].join(language === 'fa' ? ' و ' : ' and ');
+                        
+                        const prompt = `You are a world-class expert in human blood genetics. Given the following family blood types, explain the genetic incompatibility in the ${systems} system(s).
 
 **Response Structure:**
 - Start with a "### Summary" section containing a brief, one or two-sentence explanation of the core problem.
@@ -106,35 +109,37 @@ const App: React.FC = () => {
 **Family Inputs:**
 ${familyInputsString}`;
 
-                            const response = await ai.models.generateContent({
-                                model: 'gemini-2.5-flash',
-                                contents: prompt
-                            });
+                        const response = await ai.models.generateContent({
+                            model: 'gemini-2.5-flash',
+                            contents: prompt
+                        });
 
-                            const aiExplanation = response.text || '';
-                            setAnalysisResult(prev => ({ ...prev!, errors: [aiExplanation] }));
-                        } catch (error) {
-                             console.error("AI explanation fetch failed:", error);
-                             setAnalysisResult(prev => ({...prev!, errors: [t('aiAssistant.error')]}));
-                        } finally {
-                             setIsAiExplaining(false);
-                        }
-                    };
-                    
-                    fetchExplanation();
-                    return;
+                        const aiExplanation = response.text || '';
+                        // Set the AI explanation and ensure the final state is marked as invalid.
+                        setAnalysisResult(prev => ({ ...prev!, valid: false, errors: [aiExplanation] }));
+                    } catch (error) {
+                         console.error("AI explanation fetch failed:", error);
+                         setAnalysisResult(prev => ({...prev!, valid: false, errors: [t('aiAssistant.error')]}));
+                    } finally {
+                         setIsAiExplaining(false);
+                    }
+                })();
+            } else {
+                // If no AI errors, handle valid results or standard errors.
+                setAnalysisResult(familyResult);
+
+                const hasErrors = familyResult.errors && familyResult.errors.length > 0;
+
+                if (familyResult.valid && !hasErrors) {
+                    setAnalysisCompletionStatus('success');
+                    const membersToAnalyze = ['father', 'mother', ...children.map((_, i) => `child${i + 1}`)];
+                    const results = membersToAnalyze.map(memberIdentifier => {
+                        return calculator.analyze_member_probabilities(memberIdentifier, familyResult);
+                    });
+                    setMemberAnalyses(results);
+                } else {
+                    setAnalysisCompletionStatus('error');
                 }
-            }
-            
-            setAnalysisResult(familyResult);
-
-            if (familyResult.valid) {
-                setAnalysisCompletionStatus('success');
-                const membersToAnalyze = ['father', 'mother', ...children.map((_, i) => `child${i + 1}`)];
-                const results = membersToAnalyze.map(memberIdentifier => {
-                    return calculator.analyze_member_probabilities(memberIdentifier, familyResult);
-                });
-                setMemberAnalyses(results);
             }
         } catch (error: any) {
             console.error("Analysis failed:", error);

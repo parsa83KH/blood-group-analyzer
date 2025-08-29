@@ -203,7 +203,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
     const { t } = useLanguage();
     const [selectedMember, setSelectedMember] = useState<string | null>(null);
     const [isStickyActive, setIsStickyActive] = useState(false);
-    const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+    const [errorLoadingTextIndex, setErrorLoadingTextIndex] = useState(0);
+    const [analysisLoadingTextIndex, setAnalysisLoadingTextIndex] = useState(0);
     const memberSelectorRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -219,13 +220,28 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
         if (isAiExplaining) {
             const loadingTexts = t('aiErrorLoadingTexts', { returnObjects: true }) as string[];
             interval = setInterval(() => {
-                setLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
-            }, 1500); // Change text every 1.5 seconds
+                setErrorLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
+            }, 2000); // Change text every 2 seconds
         }
         return () => {
             if (interval) clearInterval(interval);
         };
     }, [isAiExplaining, t]);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout | null = null;
+        if (isLoading) {
+            const loadingTexts = t('aiErrorLoadingTexts', { returnObjects: true }) as string[];
+            interval = setInterval(() => {
+                setAnalysisLoadingTextIndex(prev => (prev + 1) % loadingTexts.length);
+            }, 2000); // Change text every 2 seconds
+        } else {
+            setAnalysisLoadingTextIndex(0); // Reset index when not loading
+        }
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isLoading, t]);
 
     useEffect(() => {
         const selectorElement = memberSelectorRef.current;
@@ -250,10 +266,14 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
 
 
     if (isLoading) {
+        const analysisLoadingTexts = t('aiErrorLoadingTexts', { returnObjects: true }) as string[];
+        const currentAnalysisLoadingText = analysisLoadingTexts[analysisLoadingTextIndex];
         return (
              <div className="text-center p-8">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-brand-primary mx-auto"></div>
-                <p className="mt-4 text-lg">{t('loading')}</p>
+                <p key={currentAnalysisLoadingText} className="mt-4 text-lg text-gray-400 min-h-[1.75rem] text-glow-animation">
+                    {currentAnalysisLoadingText}
+                </p>
             </div>
         )
     }
@@ -263,7 +283,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
     if (analysisResult.errors && analysisResult.errors.length > 0) {
         const isAiLoading = analysisResult.errors[0] === 'ai_loading_placeholder';
         const loadingTexts = t('aiErrorLoadingTexts', { returnObjects: true }) as string[];
-        const currentLoadingText = loadingTexts[loadingTextIndex];
+        const currentLoadingText = loadingTexts[errorLoadingTextIndex];
         
         return (
             <div className="mt-8">
@@ -276,12 +296,12 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ isLoading, analysisResu
                     </h3>
                     <div className="space-y-2 min-h-[4rem] flex flex-col justify-center">
                       {isAiLoading ? (
-                        <div className="text-gray-400 animate-fade-in flex items-center justify-center gap-3">
+                        <div className="text-gray-400 flex items-center justify-center gap-3">
                            <svg className="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                            </svg>
-                            <p>{currentLoadingText}</p>
+                            <p key={currentLoadingText} className="text-glow-animation">{currentLoadingText}</p>
                         </div>
                       ) : (
                          <div className="text-white text-sm sm:text-base leading-relaxed animate-fade-in">

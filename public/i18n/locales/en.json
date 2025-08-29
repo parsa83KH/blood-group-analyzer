@@ -25,7 +25,6 @@
   "rhHelper": "Phenotype (e.g. +) or Genotype (e.g. DD)",
   "analyze": "Analyze",
   "analyzing": "Analyzing...",
-  "loading": "Performing Genetic Analysis...",
   "memberAnalysisTitle": "{{member}} Analysis",
   "howItWorks": {
     "title": "How It Works",
@@ -185,7 +184,7 @@
     "Formulating a detailed explanation...",
     "Checking Punnett square possibilities...",
     "Reviewing Mendelian laws...",
-    "The combination appears to be complex...",
+    "A few moments...",
     "Pinpointing the source of the anomaly...",
     "Finalizing the genetic report...",
     "Just a moment longer..."
