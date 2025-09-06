@@ -75,7 +75,7 @@ class ApiService {
   }
 
   async sendChatMessage(request: ChatRequest): Promise<ApiResponse<{ response: string }>> {
-    return this.makeRequest<{ response: string }>('/api/chat', {
+    return this.makeRequest<{ response: string }>('/chat', {
       method: 'POST',
       body: JSON.stringify(request),
     });

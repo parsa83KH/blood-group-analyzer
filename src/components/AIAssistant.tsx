@@ -74,11 +74,20 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
                 language: promptLanguage
             });
 
+            console.log('API Response:', response);
+
             if (response.error) {
+                console.error('API Error:', response.error);
                 throw new Error(response.error);
             }
 
-            const aiResponse = response.data?.response || t('aiAssistant.error');
+            const aiResponse = response.data?.response;
+            console.log('AI Response:', aiResponse);
+            
+            if (!aiResponse) {
+                console.error('No AI response received');
+                throw new Error('No response received from AI');
+            }
             
             setMessages(prev => {
                 const lastMessageIndex = prev.length - 1;
