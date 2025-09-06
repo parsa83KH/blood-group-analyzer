@@ -60,7 +60,7 @@ This project is best experienced firsthand. Click the link below to explore its 
 3. **Set up environment variables:**
    ```bash
    # Create .env.local file with your Gemini API key
-   # See ENV_SETUP.md for detailed instructions
+   echo "VITE_GEMINI_API_KEY=your_api_key_here" > .env.local
    ```
 
 4. **Start development server:**
@@ -68,19 +68,13 @@ This project is best experienced firsthand. Click the link below to explore its 
    npm run dev
    ```
 
-5. **Start backend server (for AI features):**
-   ```bash
-   cd backend
-   npm install
-   npm start
-   ```
-
-6. **Open your browser:**
+5. **Open your browser:**
    Navigate to `http://localhost:5173`
 
 ## Deployment
 
-For deployment instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
+The project is automatically deployed to GitHub Pages. Simply push to the main branch and the site will be available at:
+**https://parsa83kh.github.io/blood-group-analyzer/**
 
 ### Available Scripts
 

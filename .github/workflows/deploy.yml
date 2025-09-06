@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy to GitHub Pages with Serverless Functions
 
 on:
   push:
@@ -33,7 +33,12 @@ jobs:
       - name: Build project
         run: npm run build
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          NODE_ENV: production
+
+      - name: Copy API functions to dist
+        run: |
+          mkdir -p dist/api
+          cp api/*.js dist/api/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

@@ -2,8 +2,10 @@
  * API service for communicating with the backend
  */
 
+import { directApiService } from './directApi';
+
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-domain.com' // Replace with your actual backend URL
+  ? '' // Use same domain for GitHub Pages serverless functions
   : 'http://localhost:3001';
 
 export interface GeneticErrorExplanationRequest {
@@ -54,7 +56,7 @@ class ApiService {
         if (error.name === 'AbortError') {
           errorMessage = 'Request timeout - server is not responding';
         } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'Cannot connect to server - please check if backend is running';
+          errorMessage = 'AI features are not available. Please deploy the backend server to enable AI functionality. See BACKEND_DEPLOYMENT.md for instructions.';
         } else {
           errorMessage = error.message;
         }
@@ -68,6 +70,11 @@ class ApiService {
   }
 
   async explainGeneticError(request: GeneticErrorExplanationRequest): Promise<ApiResponse<{ explanation: string }>> {
+    // Use direct API service for production (GitHub Pages)
+    if (window.location.hostname.includes('github.io')) {
+      return directApiService.explainGeneticError(request);
+    }
+    
     return this.makeRequest<{ explanation: string }>('/api/explain-genetic-error', {
       method: 'POST',
       body: JSON.stringify(request),
@@ -75,6 +82,11 @@ class ApiService {
   }
 
   async sendChatMessage(request: ChatRequest): Promise<ApiResponse<{ response: string }>> {
+    // Use direct API service for production (GitHub Pages)
+    if (window.location.hostname.includes('github.io')) {
+      return directApiService.sendChatMessage(request);
+    }
+    
     return this.makeRequest<{ response: string }>('/api/chat', {
       method: 'POST',
       body: JSON.stringify(request),
