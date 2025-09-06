@@ -3,7 +3,7 @@
  */
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://blood-group-analyzer-api.herokuapp.com' // Update this with your actual backend URL
+  ? '/.netlify/functions' // Netlify Functions
   : 'http://localhost:3001';
 
 export interface GeneticErrorExplanationRequest {
@@ -35,6 +35,8 @@ class ApiService {
           ...options.headers,
         },
         ...options,
+        // Add timeout for better error handling
+        signal: AbortSignal.timeout(10000), // 10 second timeout
       });
 
       if (!response.ok) {
@@ -45,8 +47,21 @@ class ApiService {
       return { data };
     } catch (error) {
       console.error('API request failed:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Unknown error';
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timeout - server is not responding';
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'Cannot connect to server - please check if backend is running';
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       return { 
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: errorMessage,
         details: error instanceof Error ? error.stack : undefined
       };
     }

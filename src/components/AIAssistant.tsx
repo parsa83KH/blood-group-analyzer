@@ -31,7 +31,7 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
         if (messages.length === 1 && messages[0].role === 'model') {
             setMessages([{ role: 'model', text: initialMessageText }]);
         }
-    }, [initialMessageText, messages]);
+    }, [initialMessageText]); // Removed 'messages' from dependency array to prevent infinite loop
     
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
