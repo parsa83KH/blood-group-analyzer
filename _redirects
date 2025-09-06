@@ -1,7 +1,0 @@
-# GitHub Pages Serverless Functions Redirects
-/api/chat /api/chat.js 200
-/api/explain-genetic-error /api/explain-genetic-error.js 200
-/api/health /api/health.js 200
-
-# Fallback for SPA
-/* /index.html 200
