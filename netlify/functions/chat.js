@@ -66,7 +66,7 @@ exports.handler = async (event, context) => {
 
 User message: ${message}`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
     const result = await model.generateContent(systemPrompt);
     const response = await result.response;
     const text = response.text();
@@ -81,14 +81,43 @@ User message: ${message}`;
     };
   } catch (error) {
     console.error('AI chat error:', error);
+    console.error('Error details:', {
+      message: error.message,
+      code: error.code,
+      status: error.status,
+      stack: error.stack
+    });
+    
+    // Provide more specific error messages
+    let errorMessage = 'Failed to process chat message';
+    let errorDetails = error.message;
+    
+    if (error.message && error.message.includes('VPN')) {
+      errorMessage = language === 'fa' 
+        ? 'خطا در دسترسی به API. لطفاً اتصال اینترنت خود را بررسی کنید.'
+        : 'API access error. Please check your internet connection.';
+    } else if (error.message && error.message.includes('quota')) {
+      errorMessage = language === 'fa'
+        ? 'محدودیت استفاده از API. لطفاً بعداً دوباره تلاش کنید.'
+        : 'API quota exceeded. Please try again later.';
+    } else if (error.message && error.message.includes('permission')) {
+      errorMessage = language === 'fa'
+        ? 'خطا در مجوزهای API. لطفاً API key را بررسی کنید.'
+        : 'API permission error. Please check your API key.';
+    }
+    
     return {
       statusCode: 500,
       headers: {
         'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify({ 
-        error: 'Failed to process chat message',
-        details: error.message 
+        error: errorMessage,
+        details: errorDetails,
+        debug: {
+          code: error.code,
+          status: error.status
+        }
       }),
     };
   }
