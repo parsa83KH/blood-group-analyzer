@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useMemo, FC, useEffect } from 'react';
+import React, { createContext, useState, useContext, useMemo, useCallback, FC, useEffect } from 'react';
 
 // Define a type for our translations object
 type Translations = Record<string, unknown>;
@@ -52,22 +52,22 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
     }, []);
 
     // Fix: Implement `t` function to match the TFunction overloads.
-    const t: TFunction = useCallback((key: string, options?: Record<string, unknown>): unknown => {
+    const t: TFunction = useCallback((key: string, options?: Record<string, unknown>): string => {
         if (!translations) {
             return key; // Return key as fallback during loading
         }
         
         const langFile = translations[language];
-        let value: unknown = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined), langFile);
+        let value: unknown = key.split('.').reduce((obj: unknown, k: string) => (obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined), langFile);
 
         if (value === undefined || value === null) {
             // Fallback to English if translation is missing in the current language
             const fallbackLangFile = translations.en;
-            value = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined), fallbackLangFile) || key;
+            value = key.split('.').reduce((obj: unknown, k: string) => (obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined), fallbackLangFile) || key;
         }
 
         if (options?.returnObjects) {
-            return value;
+            return value as string;
         }
 
         if (typeof value !== 'string') {

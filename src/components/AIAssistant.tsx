@@ -14,7 +14,12 @@ const isRTL = (text: string): boolean => {
     return rtlRegex.test(text);
 };
 
-const AIAssistant = forwardRef<AIAssistantHandle, Record<string, never>>((_props, ref) => {
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+interface AIAssistantProps {
+  // No props needed for now
+}
+
+const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref) => {
     const { t, language } = useLanguage();
     
     const initialMessageText = t('aiAssistant.initialMessage');

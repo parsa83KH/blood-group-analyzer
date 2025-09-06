@@ -30,19 +30,8 @@ const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
 };
 
 // This custom component renders the active sector with a "pop-out" effect.
-interface ActiveShapeProps {
-  cx: number;
-  cy: number;
-  innerRadius: number;
-  outerRadius: number;
-  startAngle: number;
-  endAngle: number;
-  fill: string;
-  stroke: string;
-  strokeWidth: number;
-}
-
-const ActiveShape = (props: ActiveShapeProps) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const ActiveShape = (props: any) => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, stroke, strokeWidth } = props;
     
     return (
@@ -92,7 +81,7 @@ const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({ data }) => {
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
                  <Pie
-                    // @ts-expect-error The `activeIndex` prop is valid for recharts but may have incorrect types in some versions.
+                    // @ts-expect-error - activeIndex prop exists but not in types
                     activeIndex={activeIndex ?? -1}
                     activeShape={ActiveShape}
                     data={chartData}
