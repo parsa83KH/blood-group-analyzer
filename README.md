@@ -60,7 +60,8 @@ This project is best experienced firsthand. Click the link below to explore its 
 3. **Set up environment variables:**
    ```bash
    # Create .env.local file with your Gemini API key
-   echo "VITE_GEMINI_API_KEY=your_api_key_here" > .env.local
+   # Get your API key from: https://ai.google.dev/
+   echo "VITE_GEMINI_API_KEY=your_actual_api_key_here" > .env.local
    ```
 
 4. **Start development server:**

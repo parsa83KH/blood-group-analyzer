@@ -22,9 +22,12 @@ export interface ApiResponse<T> {
 
 class DirectApiService {
   private getApiKey(): string {
-    // In production, this should be encrypted or stored securely
-    // For now, we'll use a placeholder that needs to be replaced
-    return 'AIzaSyDLrUcQdpx6BssGih8an6bFwbZG-UMC24Y';
+    // Get API key from environment variable
+    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('GEMINI_API_KEY is not configured. Please set VITE_GEMINI_API_KEY in your environment variables.');
+    }
+    return apiKey;
   }
 
   private async makeGeminiRequest(prompt: string): Promise<string> {
