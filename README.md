@@ -59,8 +59,8 @@ This project is best experienced firsthand. Click the link below to explore its 
 
 3. **Set up environment variables:**
    ```bash
-   cp .env.example .env
-   # Add your Gemini API key to .env file
+   # Create .env.local file with your Gemini API key
+   # See ENV_SETUP.md for detailed instructions
    ```
 
 4. **Start development server:**
@@ -68,8 +68,19 @@ This project is best experienced firsthand. Click the link below to explore its 
    npm run dev
    ```
 
-5. **Open your browser:**
+5. **Start backend server (for AI features):**
+   ```bash
+   cd backend
+   npm install
+   npm start
+   ```
+
+6. **Open your browser:**
    Navigate to `http://localhost:5173`
+
+## Deployment
+
+For deployment instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
 ### Available Scripts
 

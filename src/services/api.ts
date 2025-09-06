@@ -3,7 +3,7 @@
  */
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? '/.netlify/functions' // Netlify Functions
+  ? 'https://your-backend-domain.com' // Replace with your actual backend URL
   : 'http://localhost:3001';
 
 export interface GeneticErrorExplanationRequest {
@@ -75,7 +75,7 @@ class ApiService {
   }
 
   async sendChatMessage(request: ChatRequest): Promise<ApiResponse<{ response: string }>> {
-    return this.makeRequest<{ response: string }>('/chat', {
+    return this.makeRequest<{ response: string }>('/api/chat', {
       method: 'POST',
       body: JSON.stringify(request),
     });

@@ -16,8 +16,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
-    "full-deploy": "node full-deploy.cjs"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@google/genai": "latest",
