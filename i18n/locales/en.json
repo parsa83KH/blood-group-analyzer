@@ -194,7 +194,7 @@
     "placeholder": "Ask any question...",
     "send": "Send",
     "thinking": "Geno is thinking...",
-    "error": "Unfortunately, I was unable to process your request. If you are not using a VPN, please turn it on.",
+    "error": "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.",
     "initialMessage": "Hello! I'm Geno, your AI assistant, specialized in blood genetics and this application's functions. How can I help you today?",
     "askAboutThis": "Ask AI assistant about this section",
     "askAction": "Ask Geno"
