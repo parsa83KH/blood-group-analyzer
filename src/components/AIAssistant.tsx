@@ -91,7 +91,21 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
 
         } catch (err) {
             console.error("AI Assistant Error:", err);
-            const errorMessage = t('aiAssistant.error');
+            let errorMessage = t('aiAssistant.error');
+            
+            // Provide more specific error messages
+            if (err instanceof Error) {
+                if (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')) {
+                    errorMessage = language === 'fa' 
+                        ? 'خطا در اتصال به سرور. لطفاً اتصال اینترنت خود را بررسی کنید.'
+                        : 'Connection error. Please check your internet connection.';
+                } else if (err.message.includes('HTTP error! status: 500')) {
+                    errorMessage = language === 'fa'
+                        ? 'خطا در سرور. لطفاً بعداً دوباره تلاش کنید.'
+                        : 'Server error. Please try again later.';
+                }
+            }
+            
             setError(errorMessage);
             setMessages(prev => {
                 const updatedMessages = [...prev];

@@ -3,7 +3,7 @@
  */
 
 const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.herokuapp.com' // Replace with your actual backend URL
+  ? 'https://blood-group-analyzer-api.herokuapp.com' // Update this with your actual backend URL
   : 'http://localhost:3001';
 
 export interface GeneticErrorExplanationRequest {
