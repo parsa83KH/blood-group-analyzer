@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useMemo, FC, useEffect } from 'react';
 
 // Define a type for our translations object
-type Translations = Record<string, any>;
+type Translations = Record<string, unknown>;
 interface LanguageFiles {
     en: Translations;
     fa: Translations;
@@ -11,7 +11,7 @@ type Language = 'en' | 'fa';
 
 // Fix: Define TFunction type with overloads for better type inference, allowing `returnObjects: true`.
 type TFunction = {
-    (key: string, options: { returnObjects: true } & Record<string, any>): any;
+    (key: string, options: { returnObjects: true } & Record<string, unknown>): unknown;
     (key: string, options?: Record<string, string | number>): string;
 };
 
@@ -52,18 +52,18 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
     }, []);
 
     // Fix: Implement `t` function to match the TFunction overloads.
-    const t: TFunction = (key: string, options?: any): any => {
+    const t: TFunction = useCallback((key: string, options?: Record<string, unknown>): unknown => {
         if (!translations) {
             return key; // Return key as fallback during loading
         }
         
         const langFile = translations[language];
-        let value: any = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), langFile);
+        let value: unknown = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined), langFile);
 
         if (value === undefined || value === null) {
             // Fallback to English if translation is missing in the current language
             const fallbackLangFile = translations.en;
-            value = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? obj[k] : undefined), fallbackLangFile) || key;
+            value = key.split('.').reduce((obj, k) => (obj && typeof obj === 'object' ? (obj as Record<string, unknown>)[k] : undefined), fallbackLangFile) || key;
         }
 
         if (options?.returnObjects) {
@@ -83,9 +83,9 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
         }
         
         return text || key;
-    };
+    }, [translations, language]);
     
-    const value = useMemo(() => ({ language, setLanguage, t }), [language, translations]);
+    const value = useMemo(() => ({ language, setLanguage, t }), [language, t]);
 
     // Do not render children until translations are loaded to prevent showing keys
     if (!translations) {
@@ -99,6 +99,7 @@ export const LanguageProvider: FC<{ children: React.ReactNode }> = ({ children }
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useLanguage = () => {
     const context = useContext(LanguageContext);
     if (context === undefined) {

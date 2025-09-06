@@ -14,7 +14,7 @@ const isRTL = (text: string): boolean => {
     return rtlRegex.test(text);
 };
 
-const AIAssistant = forwardRef<AIAssistantHandle, {}>((_props, ref) => {
+const AIAssistant = forwardRef<AIAssistantHandle, Record<string, never>>((_props, ref) => {
     const { t, language } = useLanguage();
     
     const initialMessageText = t('aiAssistant.initialMessage');
@@ -26,11 +26,11 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((_props, ref) => {
         if (messages.length === 1 && messages[0].role === 'model') {
             setMessages([{ role: 'model', text: initialMessageText }]);
         }
-    }, [initialMessageText]);
+    }, [initialMessageText, messages]);
     
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [_error, setError] = useState<string | null>(null);
+    const [, setError] = useState<string | null>(null);
     // Note: error state is kept for future error handling implementation
 
     const chatContainerRef = useRef<HTMLDivElement>(null);

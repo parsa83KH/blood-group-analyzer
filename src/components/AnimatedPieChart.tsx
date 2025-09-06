@@ -6,9 +6,18 @@ interface AnimatedPieChartProps {
     data: ProbabilityMap;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const COLORS = ['#ef4444', '#f97316', '#84cc16', '#22c55e', '#14b8a6', '#06b6d4', '#6366f1', '#a855f7'];
 
-const CustomTooltip: React.FC<any> = ({ active, payload }) => {
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+  }>;
+}
+
+const CustomTooltip: React.FC<TooltipProps> = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-gray-900/80 backdrop-blur-sm p-3 border border-gray-700 rounded-lg shadow-2xl shadow-black/50">
@@ -21,7 +30,19 @@ const CustomTooltip: React.FC<any> = ({ active, payload }) => {
 };
 
 // This custom component renders the active sector with a "pop-out" effect.
-const ActiveShape = (props: any) => {
+interface ActiveShapeProps {
+  cx: number;
+  cy: number;
+  innerRadius: number;
+  outerRadius: number;
+  startAngle: number;
+  endAngle: number;
+  fill: string;
+  stroke: string;
+  strokeWidth: number;
+}
+
+const ActiveShape = (props: ActiveShapeProps) => {
     const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, stroke, strokeWidth } = props;
     
     return (
@@ -48,14 +69,14 @@ const ActiveShape = (props: any) => {
 const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({ data }) => {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const chartData = Object.entries(data)
-        .sort(([, a], [, b]) => b - a)
+        .sort(([, a], [, b]) => (b as number) - (a as number))
         .map(([name, value], index) => ({
             name,
             value,
             fill: COLORS[index % COLORS.length],
     }));
 
-    const onPieEnter = useCallback((_: any, index: number) => {
+    const onPieEnter = useCallback((_: unknown, index: number) => {
         setActiveIndex(index);
     }, [setActiveIndex]);
     
@@ -71,7 +92,7 @@ const AnimatedPieChart: React.FC<AnimatedPieChartProps> = ({ data }) => {
         <ResponsiveContainer width="100%" height="100%">
             <PieChart>
                  <Pie
-                    // @ts-ignore The `activeIndex` prop is valid for recharts but may have incorrect types in some versions.
+                    // @ts-expect-error The `activeIndex` prop is valid for recharts but may have incorrect types in some versions.
                     activeIndex={activeIndex ?? -1}
                     activeShape={ActiveShape}
                     data={chartData}

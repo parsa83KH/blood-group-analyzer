@@ -70,7 +70,7 @@ const App: React.FC = () => {
                 try {
                     const parsed = JSON.parse(err);
                     if (parsed.type === 'ai_explanation_required') return parsed;
-                } catch (e) { /* not a JSON error */ }
+                } catch { /* not a JSON error */ }
                 return null;
             }).filter(Boolean);
 
@@ -129,10 +129,10 @@ const App: React.FC = () => {
                     setAnalysisCompletionStatus('error');
                 }
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Analysis failed:", error);
             setAnalysisCompletionStatus('error');
-            const errorMessage = error.message && error.message.includes('API') 
+            const errorMessage = (error instanceof Error && error.message.includes('API')) 
                 ? t('aiAssistant.error') 
                 : t('error.unexpected');
 

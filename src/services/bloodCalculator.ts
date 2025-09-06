@@ -283,10 +283,10 @@ export class BloodTypeCalculator {
             }
             
             return result;
-        } catch (e: any) {
+        } catch (e: unknown) {
              return {
                 valid: false,
-                errors: [JSON.stringify({ key: 'error.unexpectedDetailed', options: { error: e.toString() } })],
+                errors: [JSON.stringify({ key: 'error.unexpectedDetailed', options: { error: e instanceof Error ? e.toString() : String(e) } })],
                 combinations: [],
                 father_genotypes: new Set(),
                 mother_genotypes: new Set(),
@@ -520,9 +520,9 @@ export class BloodTypeCalculator {
         const can_receive_from: ProbabilityMap = {};
         
         const rules = system === 'ABO'
-            // @ts-ignore - Accessing private members of encapsulated class for this specific logic
+            // @ts-expect-error - Accessing private members of encapsulated class for this specific logic
             ? { donate: this.compatibility_analyzer.abo_can_donate_to, receive: this.compatibility_analyzer.abo_can_receive_from }
-            // @ts-ignore
+            // @ts-expect-error - Accessing private members of encapsulated class for this specific logic
             : { donate: this.compatibility_analyzer.rh_can_donate_to, receive: this.compatibility_analyzer.rh_can_receive_from };
 
         for (const [phenotype, probability] of Object.entries(phenotypeProbs)) {

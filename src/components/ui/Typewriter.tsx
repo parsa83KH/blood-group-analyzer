@@ -12,7 +12,6 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, active, speed = 50, class
     const [isProcessing, setIsProcessing] = useState(false);
 
     useEffect(() => {
-        let timeoutId: ReturnType<typeof setTimeout>;
 
         // Determine the target text based on active state
         const targetText = active ? text : '';
@@ -35,12 +34,12 @@ const Typewriter: React.FC<TypewriterProps> = ({ text, active, speed = 50, class
         const currentSpeed = shouldAdd ? speed : speed / 2; // Delete faster
 
         // Set timeout for the next character change
-        timeoutId = setTimeout(() => {
+        const currentTimeoutId = setTimeout(() => {
             setDisplayedText(nextText);
         }, currentSpeed);
 
         // Cleanup function to clear timeout on re-render
-        return () => clearTimeout(timeoutId);
+        return () => clearTimeout(currentTimeoutId);
 
     }, [displayedText, text, active, speed, isProcessing]);
     
