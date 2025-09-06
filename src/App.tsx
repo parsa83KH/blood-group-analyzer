@@ -1,15 +1,15 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { GoogleGenAI } from '@google/genai';
-import { Person, FamilyAnalysisResult, MemberAnalysisResult, AIAssistantHandle } from './types';
-import BloodInputForm from './components/BloodInputForm';
-import ResultsDisplay from './components/ResultsDisplay';
-import HowItWorks from './components/HowItWorks';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import { QuestionMarkCircleIcon } from './components/icons';
-import { BloodTypeCalculator } from './services/bloodCalculator';
-import { useLanguage } from './i18n/LanguageContext';
-import AnimatedSection from './components/ui/AnimatedSection';
-import AIAssistant from './components/AIAssistant';
+import { Person, FamilyAnalysisResult, MemberAnalysisResult, AIAssistantHandle } from '@/types';
+import { apiService } from '@/services/api';
+import BloodInputForm from '@/components/BloodInputForm';
+import ResultsDisplay from '@/components/ResultsDisplay';
+import HowItWorks from '@/components/HowItWorks';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { QuestionMarkCircleIcon } from '@/components/icons';
+import { BloodTypeCalculator } from '@/services/bloodCalculator';
+import { useLanguage } from '@/i18n/LanguageContext';
+import AnimatedSection from '@/components/ui/AnimatedSection';
+import AIAssistant from '@/components/AIAssistant';
 
 type AnalysisCompletionStatus = 'idle' | 'success' | 'error';
 
@@ -79,11 +79,10 @@ const App: React.FC = () => {
                 // Force the result to be invalid and show a loading state for the AI explanation.
                 setAnalysisResult({ ...familyResult, valid: false, errors: ["ai_loading_placeholder"] });
                 setIsAiExplaining(true);
+                setIsLoading(false); // Stop the button loading animation immediately
                 
                 await (async () => {
                     try {
-                        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-                    
                         const formatPersonForPrompt = (p: Person, name: string) => `${name}: ABO=${p.ABO}, RH=${p.RH}`;
                         const familyInputsString = [
                             formatPersonForPrompt(father, t('father')),
@@ -91,30 +90,19 @@ const App: React.FC = () => {
                             ...children.map((c, i) => formatPersonForPrompt(c, `${t('child')} ${i + 1}`))
                         ].join('\n');
                         
-                        const systems = [...new Set(aiErrors.map(e => e.system))].join(language === 'fa' ? ' و ' : ' and ');
+                        const systems = [...new Set(aiErrors.map(e => e.system))];
                         
-                        const prompt = `You are a world-class expert in human blood genetics. Given the following family blood types, explain the genetic incompatibility in the ${systems} system(s).
-
-**Response Structure:**
-- Start with a "### Summary" section containing a brief, one or two-sentence explanation of the core problem.
-- Follow with a "### Detailed Explanation" section for a comprehensive analysis.
-
-**Formatting Rules:**
-- Respond ONLY in ${language === 'fa' ? 'Persian (Farsi)' : 'English'}.
-- Use Markdown headings (e.g., ### Summary).
-- Use double asterisks for bolding key terms (e.g., **genotype**, **allele**).
-- When referring to ABO genotypes, use the standard two-letter format (e.g., **AO**, **BB**, **OO**). Do NOT use superscript notations like Iᴬ or i.
-- Be direct and scientific. Do not add conversational filler, greetings, or conclusions.
-
-**Family Inputs:**
-${familyInputsString}`;
-
-                        const response = await ai.models.generateContent({
-                            model: 'gemini-2.5-flash',
-                            contents: prompt
+                        const response = await apiService.explainGeneticError({
+                            familyInputs: familyInputsString,
+                            systems,
+                            language
                         });
 
-                        const aiExplanation = response.text || '';
+                        if (response.error) {
+                            throw new Error(response.error);
+                        }
+
+                        const aiExplanation = response.data?.explanation || t('aiAssistant.error');
                         // Set the AI explanation and ensure the final state is marked as invalid.
                         setAnalysisResult(prev => ({ ...prev!, valid: false, errors: [aiExplanation] }));
                     } catch (error) {

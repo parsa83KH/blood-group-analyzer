@@ -1,4 +1,4 @@
-import { Person, FamilyAnalysisResult, MemberAnalysisResult, ABOAnalysisResult, RHAnalysisResult, ProbabilityMap, GenotypeCombination, RHGenotypeCombination, TransfusionCompatibility, TransfusionSummary } from '../types';
+import { Person, FamilyAnalysisResult, MemberAnalysisResult, ABOAnalysisResult, RHAnalysisResult, ProbabilityMap, GenotypeCombination, RHGenotypeCombination, TransfusionCompatibility, TransfusionSummary } from '@/types';
 
 class BloodCompatibility {
     private abo_can_donate_to: Record<string, string[]> = {

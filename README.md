@@ -36,6 +36,68 @@ This project is best experienced firsthand. Click the link below to explore its 
 
 ---
 
+## 🛠️ Quick Start
+
+### Prerequisites
+
+- **Node.js** (v18 or higher)
+- **npm** or **yarn**
+- **Google Gemini API Key** ([Get yours here](https://ai.google.dev/))
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/parsa83kh/blood-group-analyzer.git
+   cd blood-group-analyzer
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up environment variables:**
+   ```bash
+   cp .env.example .env
+   # Add your Gemini API key to .env file
+   ```
+
+4. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser:**
+   Navigate to `http://localhost:5173`
+
+### Available Scripts
+
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run preview      # Preview production build
+npm run lint         # Run ESLint
+npm run format       # Format code with Prettier
+npm run type-check   # Run TypeScript compiler
+```
+
+### Project Structure
+
+```
+src/
+├── components/          # React components
+│   ├── ui/             # Reusable UI components
+│   └── ...
+├── services/           # Business logic and API calls
+├── types/              # TypeScript type definitions
+├── utils/              # Utility functions
+├── i18n/               # Internationalization
+└── App.tsx             # Main application component
+```
+
+---
+
 ## 📸 Visual Showcase
 
 <div align="center">

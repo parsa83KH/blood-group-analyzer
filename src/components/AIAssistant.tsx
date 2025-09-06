@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { GoogleGenAI } from '@google/genai';
 import { useLanguage } from '../i18n/LanguageContext';
 import { ChatMessage, AIAssistantHandle } from '../types';
+import { apiService } from '../services/api';
 import Card from './ui/Card';
 import { PaperAirplaneIcon, SparklesIcon } from './icons';
 import ReactMarkdown from 'react-markdown';
@@ -14,7 +14,7 @@ const isRTL = (text: string): boolean => {
     return rtlRegex.test(text);
 };
 
-const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
+const AIAssistant = forwardRef<AIAssistantHandle, {}>((_props, ref) => {
     const { t, language } = useLanguage();
     
     const initialMessageText = t('aiAssistant.initialMessage');
@@ -30,7 +30,8 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
     
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [_error, setError] = useState<string | null>(null);
+    // Note: error state is kept for future error handling implementation
 
     const chatContainerRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -60,43 +61,28 @@ const AIAssistant = forwardRef<AIAssistantHandle, {}>((props, ref) => {
         setError(null);
         
         try {
-            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
-
             // Determine prompt language to guide the AI's response language
             const promptLanguage = isRTL(promptToSend) ? 'fa' : 'en';
 
-            const systemInstruction = t('aiSystemInstruction.base', {
-                coreFunctionality: t('aiSystemInstruction.coreFunctionality'),
-                inputs: t('aiSystemInstruction.inputs'),
-                outputs: t('aiSystemInstruction.outputs'),
-                howItWorks: t('aiSystemInstruction.howItWorks'),
-                technology: t('aiSystemInstruction.technology'),
-                languages: t('aiSystemInstruction.languages'),
-                persona: t('aiSystemInstruction.persona'),
-                safety: t('aiSystemInstruction.safety'),
-                language: promptLanguage, // Use the detected language of the prompt
-            });
-            
-            const responseStream = await ai.models.generateContentStream({
-                model: 'gemini-2.5-flash',
-                contents: promptToSend,
-                config: {
-                   systemInstruction: systemInstruction,
-                }
+            const response = await apiService.sendChatMessage({
+                message: promptToSend,
+                language: promptLanguage
             });
 
-            let accumulatedText = '';
-            for await (const chunk of responseStream) {
-                accumulatedText += chunk.text || '';
-                setMessages(prev => {
-                    const lastMessageIndex = prev.length - 1;
-                    const updatedMessages = [...prev];
-                    if (updatedMessages[lastMessageIndex] && updatedMessages[lastMessageIndex].role === 'model') {
-                        updatedMessages[lastMessageIndex] = { ...updatedMessages[lastMessageIndex], text: accumulatedText };
-                    }
-                    return updatedMessages;
-                });
+            if (response.error) {
+                throw new Error(response.error);
             }
+
+            const aiResponse = response.data?.response || t('aiAssistant.error');
+            
+            setMessages(prev => {
+                const lastMessageIndex = prev.length - 1;
+                const updatedMessages = [...prev];
+                if (updatedMessages[lastMessageIndex] && updatedMessages[lastMessageIndex].role === 'model') {
+                    updatedMessages[lastMessageIndex] = { ...updatedMessages[lastMessageIndex], text: aiResponse };
+                }
+                return updatedMessages;
+            });
 
         } catch (err) {
             console.error("AI Assistant Error:", err);

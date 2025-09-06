@@ -69,6 +69,8 @@ export interface MemberAnalysisResult {
     transfusion_compatibility: TransfusionCompatibility;
 }
 
+// Re-export from constants for backward compatibility
+export { BLOOD_TYPES } from '@/utils/constants';
 export const ABO_OPTIONS = ['Unknown', 'A', 'B', 'AB', 'O', 'AA', 'AO', 'BB', 'BO', 'AB', 'OO'];
 export const RH_OPTIONS = ['Unknown', '+', '-', 'DD', 'Dd', 'dd'];
 
