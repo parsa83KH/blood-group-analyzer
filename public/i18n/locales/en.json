@@ -197,7 +197,9 @@
     "error": "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.",
     "initialMessage": "Hello! I'm Geno, your AI assistant, specialized in blood genetics and this application's functions. How can I help you today?",
     "askAboutThis": "Ask AI assistant about this section",
-    "askAction": "Ask Geno"
+    "askAction": "Ask Geno",
+    "contextSentTitle": "Context Sent",
+    "contextSentMessage": "Information from this section was sent to Geno"
   },
   "aiSystemInstruction": {
     "base": "You are an expert AI assistant embedded in the 'Blood Group Analyzer' web application. Your name is 'Geno'. Your purpose is to help users understand blood genetics, transfusion compatibility, and how to use this specific application.\n\n**About the 'Blood Group Analyzer' App:**\n- **Core Functionality:** {{coreFunctionality}}\n- **Inputs:** {{inputs}}\n- **Outputs:** {{outputs}}\n- **'How It Works' Section:** {{howItWorks}}\n- **Technology:** {{technology}}\n- **Languages:** {{languages}}\n\n**Your Persona & Guidelines:**\n- {{persona}}\n- {{safety}}\n- **Language:** Respond in the language the user asks the question in. The current user language is: {{language}}.",

@@ -56,10 +56,10 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
         }
     }, [input]);
 
-    const sendPrompt = async (promptToSend: string) => {
+    const sendPrompt = async (promptToSend: string, isContextMessage: boolean = false) => {
         if (isLoading) return;
 
-        const newUserMessage: ChatMessage = { role: 'user', text: promptToSend };
+        const newUserMessage: ChatMessage = { role: 'user', text: promptToSend, isContextMessage };
         setMessages(prev => [...prev, newUserMessage, { role: 'model', text: '' }]);
         setInput(''); // Clear input in case user was typing something else
         setIsLoading(true);
@@ -179,24 +179,43 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
                     return (
                         <div key={index} className={`flex items-start gap-3 animate-fade-in ${msg.role === 'user' ? 'justify-end' : ''}`}>
                             {msg.role === 'model' && <div className="w-8 h-8 rounded-full bg-brand-primary/80 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm leading-none">AI</div>}
-                            <div
-                                className={`max-w-xl p-3 rounded-xl ${
-                                    msg.role === 'model'
-                                        ? 'bg-gray-800 text-gray-300 markdown-content'
-                                        : 'bg-brand-accent text-white'
-                                } ${messageIsRtl ? 'font-persian' : ''}`}
-                                dir={messageDir}
-                            >
-                               {isThinkingPlaceholder ? (
-                                    <div className="loading-dots">
-                                        <span></span><span></span><span></span>
+                            {msg.role === 'user' && msg.isContextMessage ? (
+                                // Special display for context messages
+                                <div className="max-w-md">
+                                    <div className="relative overflow-hidden bg-gradient-to-br from-brand-accent/20 to-brand-primary/20 border border-brand-accent/40 text-gray-300 px-4 py-3 rounded-xl backdrop-blur-sm">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <SparklesIcon className="w-5 h-5 text-brand-accent animate-pulse" />
+                                            <span className={`text-sm font-semibold text-brand-accent ${language === 'fa' ? 'font-persian' : ''}`}>
+                                                {t('aiAssistant.contextSentTitle')}
+                                            </span>
+                                        </div>
+                                        <div className={`text-xs opacity-75 ${language === 'fa' ? 'font-persian' : ''}`}>
+                                            {t('aiAssistant.contextSentMessage')}
+                                        </div>
+                                        {/* Animated shimmer effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>
                                     </div>
-                               ) : msg.role === 'model' ? (
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text || '\u00A0'}</ReactMarkdown>
-                               ) : (
-                                    <div className="whitespace-pre-wrap">{msg.text}</div>
-                               )}
-                            </div>
+                                </div>
+                            ) : (
+                                <div
+                                    className={`max-w-xl p-3 rounded-xl ${
+                                        msg.role === 'model'
+                                            ? 'bg-gray-800 text-gray-300 markdown-content'
+                                            : 'bg-brand-accent text-white'
+                                    } ${messageIsRtl ? 'font-persian' : ''}`}
+                                    dir={messageDir}
+                                >
+                                   {isThinkingPlaceholder ? (
+                                        <div className="loading-dots">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                   ) : msg.role === 'model' ? (
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text || '\u00A0'}</ReactMarkdown>
+                                   ) : (
+                                        <div className="whitespace-pre-wrap">{msg.text}</div>
+                                   )}
+                                </div>
+                            )}
                              {msg.role === 'user' && <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0 text-white font-bold text-sm leading-none">{userIconText}</div>}
                         </div>
                     );

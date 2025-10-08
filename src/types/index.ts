@@ -77,8 +77,9 @@ export const RH_OPTIONS = ['Unknown', '+', '-', 'DD', 'Dd', 'dd'];
 export interface ChatMessage {
     role: 'user' | 'model';
     text: string;
+    isContextMessage?: boolean; // Indicates if this is a context-based message from "Ask Geno" button
 }
 
 export interface AIAssistantHandle {
-    sendPrompt: (prompt: string) => void;
+    sendPrompt: (prompt: string, isContextMessage?: boolean) => void;
 }

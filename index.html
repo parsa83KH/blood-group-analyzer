@@ -497,7 +497,8 @@
               'fade-in-down': 'fadeInDown 0.5s ease-in-out',
               'fade-in-up': 'fadeInUp 0.5s ease-in-out',
               'text-gradient': 'textGradient 3s ease-in-out infinite',
-              'blink': 'blink 1.2s step-end infinite'
+              'blink': 'blink 1.2s step-end infinite',
+              'shimmer': 'shimmer 2.5s ease-in-out infinite'
             },
             keyframes: {
               fadeIn: { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
@@ -508,6 +509,10 @@
                 '50%': { 'background-position': '100% 50%' },
               },
               blink: { '50%': { opacity: 0 } },
+              shimmer: {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' }
+              },
             }
           }
         }

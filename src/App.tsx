@@ -151,7 +151,7 @@ const App: React.FC = () => {
 
     const handleAskAI = (prompt: string) => {
         if (aiAssistantRef.current) {
-            aiAssistantRef.current.sendPrompt(prompt);
+            aiAssistantRef.current.sendPrompt(prompt, true); // true indicates this is a context message
         }
         if (aiSectionRef.current) {
             aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
