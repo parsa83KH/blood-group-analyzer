@@ -39,10 +39,11 @@ interface TransfusionSectionProps {
     colorClass: string;
     analysis: MemberAnalysisResult;
     family: Person[];
-    onAskAI: (prompt: string) => void;
+    onAskAI: (prompt: string, contextType?: string, contextData?: Record<string, any>) => void;
+    contextType: string;
 }
 
-const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, icon, colorClass, analysis, family, onAskAI }) => {
+const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, icon, colorClass, analysis, family, onAskAI, contextType }) => {
     const { t } = useLanguage();
     const hasData = Object.keys(data).length > 0;
 
@@ -58,13 +59,15 @@ const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, ic
         analysisType: title,
         compatibilityData: compatibilityData,
     });
-    
+
     return (
         <div className="relative group flex flex-col items-center">
              <AskAIButton
                 prompt={aiPrompt}
                 onAsk={onAskAI}
                 className="top-2 right-2 rtl:left-2 rtl:right-auto z-10"
+                contextType={contextType}
+                contextData={{ member: memberName }}
             />
             <h5 className={`flex items-center gap-2 text-lg font-semibold mb-4 ${colorClass}`}>
                 {icon}
@@ -138,6 +141,7 @@ const TransfusionVisualizer: React.FC<TransfusionVisualizerProps> = ({ compatibi
                         analysis={analysis}
                         family={family}
                         onAskAI={onAskAI}
+                        contextType="transfusionReceive"
                     />
                     <TransfusionSection
                         title={t('transfusion.donate')}
@@ -147,6 +151,7 @@ const TransfusionVisualizer: React.FC<TransfusionVisualizerProps> = ({ compatibi
                         analysis={analysis}
                         family={family}
                         onAskAI={onAskAI}
+                        contextType="transfusionDonate"
                     />
                 </div>
             )}

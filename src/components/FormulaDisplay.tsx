@@ -144,6 +144,8 @@ const FormulaDisplay: React.FC<FormulaDisplayProps> = ({ onAskAI }) => {
                                             prompt={prompt}
                                             onAsk={onAskAI}
                                             className="absolute top-0 left-1/2 -translate-x-1/2"
+                                            contextType="formula"
+                                            contextData={{ category }}
                                         />
                                     </td>
                                     <td className="p-3 align-top">

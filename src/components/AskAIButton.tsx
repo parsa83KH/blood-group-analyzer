@@ -4,16 +4,18 @@ import { SparklesIcon } from './icons';
 
 interface AskAIButtonProps {
     prompt: string;
-    onAsk: (prompt: string) => void;
+    onAsk: (prompt: string, contextType?: string, contextData?: Record<string, any>) => void;
     className?: string;
+    contextType?: string;
+    contextData?: Record<string, any>;
 }
 
-const AskAIButton: React.FC<AskAIButtonProps> = ({ prompt, onAsk, className = '' }) => {
+const AskAIButton: React.FC<AskAIButtonProps> = ({ prompt, onAsk, className = '', contextType, contextData }) => {
     const { t } = useLanguage();
 
     const handleClick = (e: React.MouseEvent) => {
         e.stopPropagation(); // prevent any parent click handlers
-        onAsk(prompt);
+        onAsk(prompt, contextType, contextData);
     };
 
     return (

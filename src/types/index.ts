@@ -78,8 +78,10 @@ export interface ChatMessage {
     role: 'user' | 'model';
     text: string;
     isContextMessage?: boolean; // Indicates if this is a context-based message from "Ask Geno" button
+    contextType?: string; // Type of context (e.g., 'punnettSquare', 'formula', 'aboPhenotype')
+    contextData?: Record<string, any>; // Additional context data (e.g., category for formulas)
 }
 
 export interface AIAssistantHandle {
-    sendPrompt: (prompt: string, isContextMessage?: boolean) => void;
+    sendPrompt: (prompt: string, isContextMessage?: boolean, contextType?: string, contextData?: Record<string, any>) => void;
 }

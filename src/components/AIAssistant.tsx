@@ -56,10 +56,16 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
         }
     }, [input]);
 
-    const sendPrompt = async (promptToSend: string, isContextMessage: boolean = false) => {
+    const sendPrompt = async (promptToSend: string, isContextMessage: boolean = false, contextType?: string, contextData?: Record<string, any>) => {
         if (isLoading) return;
 
-        const newUserMessage: ChatMessage = { role: 'user', text: promptToSend, isContextMessage };
+        const newUserMessage: ChatMessage = { 
+            role: 'user', 
+            text: promptToSend, 
+            isContextMessage,
+            contextType,
+            contextData
+        };
         setMessages(prev => [...prev, newUserMessage, { role: 'model', text: '' }]);
         setInput(''); // Clear input in case user was typing something else
         setIsLoading(true);
@@ -190,7 +196,10 @@ const AIAssistant = forwardRef<AIAssistantHandle, AIAssistantProps>((_props, ref
                                             </span>
                                         </div>
                                         <div className={`text-xs opacity-75 ${language === 'fa' ? 'font-persian' : ''}`}>
-                                            {t('aiAssistant.contextSentMessage')}
+                                            {msg.contextType 
+                                                ? t(`aiAssistant.contextMessages.${msg.contextType}`, msg.contextData || {})
+                                                : t('aiAssistant.contextSentMessage')
+                                            }
                                         </div>
                                         {/* Animated shimmer effect */}
                                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>

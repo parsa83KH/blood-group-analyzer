@@ -109,6 +109,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ onAskAI }) => {
             prompt={punnettPrompt}
             onAsk={onAskAI}
             className="absolute top-0 left-1/2 -translate-x-1/2"
+            contextType="punnettSquare"
            />
         </div>
       </div>
@@ -133,6 +134,7 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ onAskAI }) => {
               prompt={transfusionPrompt}
               onAsk={onAskAI}
               className="absolute top-0 left-1/2 -translate-x-1/2"
+              contextType="transfusionRules"
             />
           </div>
       </div>

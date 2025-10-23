@@ -199,7 +199,20 @@
     "askAboutThis": "Ask AI assistant about this section",
     "askAction": "Ask Geno",
     "contextSentTitle": "Context Sent",
-    "contextSentMessage": "Information from this section was sent to Geno"
+    "contextSentMessage": "Information from this section was sent to Geno",
+    "contextMessages": {
+      "punnettSquare": "Punnett Square inheritance example was sent to Geno",
+      "transfusionRules": "Blood transfusion compatibility rules were sent to Geno",
+      "formula": "Mathematical formula for {{category}} was sent to Geno",
+      "aboPhenotype": "ABO phenotype probability chart for {{member}} was sent to Geno",
+      "aboGenotype": "ABO genotype probability chart for {{member}} was sent to Geno",
+      "rhPhenotype": "RH phenotype probability chart for {{member}} was sent to Geno",
+      "rhGenotype": "RH genotype probability chart for {{member}} was sent to Geno",
+      "hybridGenotype": "Hybrid genotype probability chart for {{member}} was sent to Geno",
+      "hybridPhenotype": "Hybrid phenotype probability chart for {{member}} was sent to Geno",
+      "transfusionReceive": "Blood transfusion receiving compatibility analysis for {{member}} was sent to Geno",
+      "transfusionDonate": "Blood transfusion donation compatibility analysis for {{member}} was sent to Geno"
+    }
   },
   "aiSystemInstruction": {
     "base": "You are an expert AI assistant embedded in the 'Blood Group Analyzer' web application. Your name is 'Geno'. Your purpose is to help users understand blood genetics, transfusion compatibility, and how to use this specific application.\n\n**About the 'Blood Group Analyzer' App:**\n- **Core Functionality:** {{coreFunctionality}}\n- **Inputs:** {{inputs}}\n- **Outputs:** {{outputs}}\n- **'How It Works' Section:** {{howItWorks}}\n- **Technology:** {{technology}}\n- **Languages:** {{languages}}\n\n**Your Persona & Guidelines:**\n- {{persona}}\n- {{safety}}\n- **Language:** Respond in the language the user asks the question in. The current user language is: {{language}}.",

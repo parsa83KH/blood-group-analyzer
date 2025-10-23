@@ -81,14 +81,15 @@ const AIExplanation: React.FC<{ text: string }> = ({ text }) => {
 interface ProbabilityDisplayBlockProps {
     title: string;
     data: ProbabilityMap;
-    onAskAI: (prompt: string) => void;
+    onAskAI: (prompt: string, contextType?: string, contextData?: Record<string, any>) => void;
     promptContext: {
         family: Person[];
         member: MemberAnalysisResult;
-    }
+    };
+    contextType: string;
 }
 
-const ProbabilityDisplayBlock: React.FC<ProbabilityDisplayBlockProps> = ({ title, data, onAskAI, promptContext }) => {
+const ProbabilityDisplayBlock: React.FC<ProbabilityDisplayBlockProps> = ({ title, data, onAskAI, promptContext, contextType }) => {
     const { t } = useLanguage();
     if (Object.keys(data).length === 0) return null;
 
@@ -109,6 +110,8 @@ const ProbabilityDisplayBlock: React.FC<ProbabilityDisplayBlockProps> = ({ title
                 prompt={aiPrompt}
                 onAsk={onAskAI}
                 className="top-2 right-2 rtl:left-2 rtl:right-auto z-10"
+                contextType={contextType}
+                contextData={{ member: memberName }}
             />
             <h5 className="text-lg font-medium mb-4 text-center text-gray-300">{title}</h5>
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-center">
@@ -170,12 +173,12 @@ const MemberResultCard: React.FC<MemberResultCardProps> = ({ analysis, family, o
                 </h3>
                 
                 <div className="space-y-6 mb-8">
-                    <ProbabilityDisplayBlock title={t('charts.aboPheno')} data={analysis.abo_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
-                    <ProbabilityDisplayBlock title={t('charts.aboGeno')} data={analysis.abo_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
-                    <ProbabilityDisplayBlock title={t('charts.rhPheno')} data={analysis.rh_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
-                    <ProbabilityDisplayBlock title={t('charts.rhGeno')} data={analysis.rh_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
-                    <ProbabilityDisplayBlock title={t('charts.hybridGeno')} data={formattedHybridGenoProbs} onAskAI={onAskAI} promptContext={promptContext} />
-                    <ProbabilityDisplayBlock title={t('charts.hybridPheno')} data={analysis.hybrid_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} />
+                    <ProbabilityDisplayBlock title={t('charts.aboPheno')} data={analysis.abo_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} contextType="aboPhenotype" />
+                    <ProbabilityDisplayBlock title={t('charts.aboGeno')} data={analysis.abo_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} contextType="aboGenotype" />
+                    <ProbabilityDisplayBlock title={t('charts.rhPheno')} data={analysis.rh_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} contextType="rhPhenotype" />
+                    <ProbabilityDisplayBlock title={t('charts.rhGeno')} data={analysis.rh_genotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} contextType="rhGenotype" />
+                    <ProbabilityDisplayBlock title={t('charts.hybridGeno')} data={formattedHybridGenoProbs} onAskAI={onAskAI} promptContext={promptContext} contextType="hybridGenotype" />
+                    <ProbabilityDisplayBlock title={t('charts.hybridPheno')} data={analysis.hybrid_phenotype_probabilities} onAskAI={onAskAI} promptContext={promptContext} contextType="hybridPhenotype" />
                 </div>
                 
                 <h4 className="text-xl font-semibold text-center mb-4 text-gray-300">{t('transfusion.title')}</h4>
