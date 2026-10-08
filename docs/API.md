@@ -126,41 +126,12 @@ Creates a throttled version of a function.
 
 Validates if the provided ABO and RH values are valid blood type components.
 
-#### `isValidApiKey(apiKey: string): boolean`
-
-Validates the format of a Google Gemini API key.
-
-## AI Integration
-
-### Google Gemini API
-
-The application integrates with Google Gemini for AI-powered explanations.
-
-#### Configuration
-
-```typescript
-const ai = new GoogleGenAI({ 
-  apiKey: process.env.API_KEY as string 
-});
-```
-
-#### Usage
-
-```typescript
-const response = await ai.models.generateContent({
-  model: 'gemini-2.5-flash',
-  contents: prompt
-});
-```
-
 ## Error Handling
 
 The application uses structured error handling with specific error types:
 
 - **Validation Errors**: Invalid input data
-- **Genetic Impossibilities**: Biologically impossible combinations
-- **AI Errors**: Issues with AI service integration
-- **API Errors**: Network or service failures
+- **Genetic Impossibilities**: Biologically impossible ABO or RH combinations, with a specific message for each conflict type
 
 ## Internationalization
 

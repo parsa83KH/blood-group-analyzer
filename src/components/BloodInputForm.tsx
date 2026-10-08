@@ -5,6 +5,7 @@ import Card from './ui/Card';
 import Button from './ui/Button';
 import Select from './ui/Select';
 import { useLanguage } from '../i18n/LanguageContext';
+import { isTouchPrimaryDevice } from '../utils/helpers';
 
 interface BloodInputFormProps {
     family: Person[];
@@ -61,6 +62,8 @@ const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAn
     };
     
     const handleTiltGlowMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isTouchPrimaryDevice()) return;
+
         const el = e.currentTarget;
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -89,6 +92,7 @@ const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAn
     };
 
     const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+        if (isTouchPrimaryDevice()) return;
         e.currentTarget.classList.add('is-hovering');
     };
 
@@ -103,6 +107,11 @@ const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAn
         el.style.setProperty('--rotateY', '0deg');
     };
 
+    const handleTiltGlowMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isTouchPrimaryDevice()) return;
+        e.currentTarget.classList.add('is-hovering');
+    };
+
 
     return (
         <Card>
@@ -113,7 +122,7 @@ const BloodInputForm: React.FC<BloodInputFormProps> = ({ family, setFamily, onAn
                         ref={el => { memberBoxRefs.current[index] = el; }}
                         className="interactive-tilt-box interactive-glow-border p-4 rounded-lg border border-gray-700/50"
                         onMouseMove={handleTiltGlowMouseMove}
-                        onMouseEnter={handleMouseEnter}
+                        onMouseEnter={handleTiltGlowMouseEnter}
                         onMouseLeave={handleTiltGlowMouseLeave}
                         style={{ borderRadius: '0.5rem' }}
                     >

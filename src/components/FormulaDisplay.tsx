@@ -1,12 +1,7 @@
 import React, { useMemo } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
-import AskAIButton from './AskAIButton';
 
-interface FormulaDisplayProps {
-    onAskAI: (prompt: string) => void;
-}
-
-const FormulaDisplay: React.FC<FormulaDisplayProps> = ({ onAskAI }) => {
+const FormulaDisplay: React.FC = () => {
     const { t } = useLanguage();
 
     const formulasData = useMemo(() => [
@@ -129,8 +124,7 @@ const FormulaDisplay: React.FC<FormulaDisplayProps> = ({ onAskAI }) => {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700/50">
-                        {formulasData.map(({ category, formula, example, formulaString }, index) => {
-                            const prompt = t('howItWorks.formulas.aiPrompt', { category: category, formula: formulaString });
+                        {formulasData.map(({ category, formula, example }, index) => {
                             return (
                                 <tr key={index} className="group hover:bg-brand-primary/5 transition-colors duration-200" style={{ animation: `fadeInUp 0.5s ease-out ${index * 0.05}s forwards` }}>
                                     <td className="p-3 align-top">
@@ -140,13 +134,6 @@ const FormulaDisplay: React.FC<FormulaDisplayProps> = ({ onAskAI }) => {
                                         <div className="flex items-center justify-center h-full text-center min-h-[6rem]">
                                             <code className="text-base text-rose-300 font-mono" dir="ltr">{formula}</code>
                                         </div>
-                                        <AskAIButton
-                                            prompt={prompt}
-                                            onAsk={onAskAI}
-                                            className="absolute top-0 left-1/2 -translate-x-1/2"
-                                            contextType="formula"
-                                            contextData={{ category }}
-                                        />
                                     </td>
                                     <td className="p-3 align-top">
                                         <pre className="text-xs text-gray-400 font-mono whitespace-pre-wrap leading-relaxed">{example}</pre>

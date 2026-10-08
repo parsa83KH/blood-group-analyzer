@@ -1,14 +1,14 @@
 # 🩸 Blood Group Analyzer 🧬
 
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=36BCF7&center=true&vCenter=true&width=435&lines=Blood+Group+Analysis+System;AI-Powered+Genetic+Testing;Welcome+to+the+Future!" alt="Typing animation" width="80%">
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=36BCF7&center=true&vCenter=true&width=435&lines=Blood+Group+Analysis+System;Genetic+Inheritance+Testing;Welcome+to+the+Future!" alt="Typing animation" width="80%">
 </p>
 <p align="center">
   <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=300&section=header&text=Blood%20Analysis&fontSize=90&animation=fadeIn" alt="Header animation" width="80%">
 </p>
 
 <p align="center">
-  <strong>A cutting-edge web application that deciphers the complexities of blood type genetics and transfusion compatibility, supercharged by the Google Gemini AI and a stunning, interactive user interface.</strong>
+  <strong>A web application that deciphers blood type genetics and transfusion compatibility with a deterministic Mendelian engine and an interactive user interface.</strong>
 </p>
 
 <p align="center">
@@ -20,9 +20,6 @@
   </a>
   <a href="https://tailwindcss.com/" target="_blank">
     <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
-  </a>
-  <a href="https://ai.google.dev/gemini-api" target="_blank">
-    <img src="https://img.shields.io/badge/Gemini_API-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini API">
   </a>
 </p>
 
@@ -42,7 +39,6 @@ This project is best experienced firsthand. Click the link below to explore its 
 
 - **Node.js** (v18 or higher)
 - **npm** or **yarn**
-- **Google Gemini API Key** ([Get yours here](https://ai.google.dev/))
 
 ### Installation
 
@@ -57,19 +53,12 @@ This project is best experienced firsthand. Click the link below to explore its 
    npm install
    ```
 
-3. **Set up environment variables:**
-   ```bash
-   # Create .env.local file with your Gemini API key
-   # Get your API key from: https://ai.google.dev/
-   echo "VITE_GEMINI_API_KEY=your_actual_api_key_here" > .env.local
-   ```
-
-4. **Start development server:**
+3. **Start development server:**
    ```bash
    npm run dev
    ```
 
-5. **Open your browser:**
+4. **Open your browser:**
    Navigate to `http://localhost:5173`
 
 ## Deployment
@@ -121,7 +110,7 @@ src/
 <tr>
 <th align="center" width="33%">🎯 <b>Smart Input Interface</b></th>
 <th align="center" width="33%">📊 <b>Dynamic Results Dashboard</b></th>
-<th align="center" width="34%">🧠 <b>AI-Powered Insights</b></th>
+<th align="center" width="34%">🧠 <b>Genetic Conflict Messages</b></th>
 </tr>
 </thead>
 <tbody>
@@ -152,14 +141,14 @@ src/
 </td>
 <td align="center">
   <div style="position: relative;">
-    <img src="https://capsule-render.vercel.app/api?type=rect&color=F5A623&height=180&section=header&text=AI%20Analysis&fontSize=24&fontColor=ffffff&animation=fadeIn" alt="AI Explanation" width="100%">
+    <img src="https://capsule-render.vercel.app/api?type=rect&color=F5A623&height=180&section=header&text=Conflict%20Messages&fontSize=24&fontColor=ffffff&animation=fadeIn" alt="Genetic conflict messages" width="100%">
     <br><br>
-    <img src="https://img.shields.io/badge/🤖%20Gemini-Powered-F5A623?style=for-the-badge" alt="AI Badge">
+    <img src="https://img.shields.io/badge/Mendelian-Conflict%20Checks-F5A623?style=for-the-badge" alt="Conflict checks">
     <br><br>
-    <sub><b>🧬 Intelligence:</b><br>
-- Context-aware explanations<br>
-- Medical terminology translation<br>
-- Error detection & guidance</sub>
+    <sub><b>🧬 Checks:</b><br>
+- Specific ABO conflict messages<br>
+- Specific RH conflict messages<br>
+- Allele-level explanations</sub>
   </div>
 </td>
 </tr>
@@ -177,7 +166,7 @@ src/
 <table align="center" width="100%">
 <thead>
 <tr>
-<th align="center" width="33%">🤖 <b>Meet Assistant "Geno"</b></th>
+<th align="center" width="33%">🧬 <b>Inheritance Rules</b></th>
 <th align="center" width="33%">🎓 <b>Interactive Learning Hub</b></th>
 <th align="center" width="34%">🌍 <b>Global Accessibility</b></th>
 </tr>
@@ -186,14 +175,14 @@ src/
 <tr>
 <td align="center">
   <div style="position: relative;">
-    <img src="https://capsule-render.vercel.app/api?type=cylinder&color=7ED321&height=180&section=header&text=Geno%20AI&fontSize=28&fontColor=ffffff&animation=blinking" alt="AI Assistant Geno" width="100%">
+    <img src="https://capsule-render.vercel.app/api?type=cylinder&color=7ED321&height=180&section=header&text=Mendelian%20Rules&fontSize=28&fontColor=ffffff&animation=blinking" alt="Mendelian inheritance" width="100%">
     <br><br>
-    <img src="https://img.shields.io/badge/💬%20Conversational-AI%20Guide-7ED321?style=for-the-badge&logo=robot" alt="Geno Badge">
+    <img src="https://img.shields.io/badge/ABO%20%2B%20RH-Deterministic-7ED321?style=for-the-badge" alt="Deterministic engine">
     <br><br>
-    <sub><b>🎪 Personality:</b><br>
-- Friendly genetic counselor<br>
-- 24/7 instant support<br>
-- Personalized explanations</sub>
+    <sub><b>Rules:</b><br>
+- One allele from each parent<br>
+- Phenotype expands to genotypes<br>
+- Impossible families are flagged</sub>
   </div>
 </td>
 <td align="center">
@@ -252,11 +241,6 @@ src/
     -   Goes beyond simple compatibility charts by calculating the *probability* of compatibility for donations and receptions.
     -   This is crucial when a person's exact blood type is unknown; the app weighs all possibilities to give a percentage-based compatibility score.
 
--   **🤖 "Geno" - The AI Blood Expert:**
-    -   Powered by **Google's `gemini-2.5-flash` model**, Geno provides context-aware explanations for your results.
-    -   Ask it anything from "Why is my child's genotype probability 50% AO?" to "Explain the Punnett Square for me."
-    -   If the app detects a genetic impossibility, Geno will provide a detailed, easy-to-understand explanation of why the combination is invalid.
-
 -   **🎨 Immersive & Interactive UI/UX:**
     -   A visually rich interface with **interactive glow and 3D tilt effects** on cards that respond to your cursor.
     -   Features stunning **custom animations**, including a satisfying "blob" button, animated icons, and smooth transitions that make the experience engaging and fun.
@@ -267,13 +251,13 @@ src/
     -   Explore interactive diagrams of **Punnett squares**, transfusion rules, and the mathematical formulas powering the analysis.
 
 -   **🌍 Fully Bilingual:**
-    -   Seamlessly switch between **English** and **Persian (Farsi)** with full UI and AI response localization. The app automatically detects text direction (LTR/RTL).
+    -   Seamlessly switch between **English** and **Persian (Farsi)**. The app automatically detects text direction (LTR/RTL).
 
 ---
 
 ## ⚙️ How It Works: The Analysis Pipeline
 
-The application follows a sophisticated pipeline to turn raw user input into insightful, AI-powered analysis.
+The application follows a pipeline that turns family blood types into probabilities and specific genetic-conflict messages.
 
 | Step | Process | Description |
 | :--: | --- | --- |
@@ -282,14 +266,14 @@ The application follows a sophisticated pipeline to turn raw user input into ins
 | **3** | **Probability Calculation** | The app analyzes the pool of valid combinations to calculate the precise percentage probability for every possible genotype and phenotype for each family member. Children's probabilities are weighted based on Punnett square outcomes from all valid parent pairings. |
 | **4** | **Transfusion Logic** | Using the calculated phenotype probabilities, the engine determines transfusion compatibility. It computes a weighted average of compatibility across all potential blood types for a person. |
 | **5** | **Data Visualization** | The calculated results are rendered in interactive pie charts (using Recharts), sortable tables, and clear summary cards for an intuitive user experience. |
-| **6** | **AI-Powered Explanation** | If a genetic conflict is found, or if the user requests more information, the relevant data is sent to the **Google Gemini API** with a carefully crafted system prompt. The AI then generates a natural language explanation tailored to the user's specific scenario. |
+| **6** | **Conflict message** | If a genetic conflict is found, the analyzer shows a specific message for that ABO or RH genotype conflict (which parent cannot provide the required allele). |
 
 ---
 
 ## 🛠️ Tech Stack Deep Dive
 
 <p align="center">
-  <i>This project leverages cutting-edge technologies to deliver a seamless experience in genetic analysis and healthcare AI</i>
+  <i>This project uses a deterministic Mendelian engine for family blood-type analysis</i>
 </p>
 
 <div align="center">
@@ -345,14 +329,14 @@ Built with performance, scalability, and user experience at its core. Every tech
 </tr>
 
 <tr>
-<td align="center"><b>AI Brain</b></td>
+<td align="center"><b>Inheritance engine</b></td>
 <td align="center">
-  <a href="https://ai.google.dev/gemini-api">
-    <img src="https://img.shields.io/badge/Gemini_2.5_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini"/>
+  <a href="https://openrouter.ai/z-ai/glm-5.2">
+    <img src="https://img.shields.io/badge/ABO%20%2B%20RH-Mendelian-6467F2?style=for-the-badge" alt="Mendelian engine"/>
   </a>
 </td>
 <td>State-of-the-art language model providing contextually accurate genetic explanations and medical insights</td>
-<td align="center">🧠 <b>2x faster</b> AI responses</td>
+<td align="center">Instant local calculations</td>
 </tr>
 
 <tr>
@@ -388,7 +372,7 @@ Built with performance, scalability, and user experience at its core. Every tech
 <img src="https://img.shields.io/badge/Core_Web_Vitals-95/100-success?style=for-the-badge&logo=lighthouse&logoColor=white" alt="Performance"/>
 <img src="https://img.shields.io/badge/TypeScript_Coverage-98%25-blue?style=for-the-badge&logo=typescript&logoColor=white" alt="Coverage"/>
 <img src="https://img.shields.io/badge/Bundle_Size-<50KB-green?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle"/>
-<img src="https://img.shields.io/badge/AI_Response-<2s-orange?style=for-the-badge&logo=google&logoColor=white" alt="AI Speed"/>
+<img src="https://img.shields.io/badge/Analysis-Local-orange?style=for-the-badge" alt="Local analysis"/>
 
 **🔬 Built for Healthcare Precision | 💻 Optimized for Developer Experience | 🚀 Designed for Scale**
 
@@ -419,7 +403,7 @@ Feel free to reach out with any questions, feedback, or collaboration ideas!
 ---
 
 <p align="center">
-<b>🩸 Passionate about combining Laboratory Sciences with AI Development</b><br>
+<b>Blood group genetics and laboratory sciences</b><br>
 <i>Always open to discussing innovative healthcare solutions and genetic analysis projects!</i>
 </p>
 
@@ -463,7 +447,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 
 SOFTWARE.
 
-This project includes AI-powered genetic analysis tools and should be used for
+This project includes genetic analysis tools and should be used for
 
 educational purposes only. Medical decisions should always be made in consultation
 

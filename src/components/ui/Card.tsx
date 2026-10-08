@@ -1,4 +1,5 @@
 import React from 'react';
+import { isTouchPrimaryDevice } from '../../utils/helpers';
 
 interface CardProps {
     children: React.ReactNode;
@@ -8,6 +9,8 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({ children, className = '', enableTilt = false }) => {
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isTouchPrimaryDevice()) return;
+
         const el = e.currentTarget;
         const rect = el.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -26,6 +29,7 @@ const Card: React.FC<CardProps> = ({ children, className = '', enableTilt = fals
     };
 
     const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (isTouchPrimaryDevice()) return;
         e.currentTarget.classList.add('is-hovering');
     };
 

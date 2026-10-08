@@ -3,13 +3,8 @@ import Card from './ui/Card';
 import { useLanguage } from '../i18n/LanguageContext';
 import { PencilSquareIcon, ArrowRightIcon, BloodBagIcon, CalculatorIcon } from './icons';
 import FormulaDisplay from './FormulaDisplay';
-import AskAIButton from './AskAIButton';
 
-interface HowItWorksProps {
-  onAskAI: (prompt: string) => void;
-}
-
-const HowItWorks: React.FC<HowItWorksProps> = ({ onAskAI }) => {
+const HowItWorks: React.FC = () => {
   const { t } = useLanguage();
 
   const Allele: React.FC<{ allele: string; delay: number }> = ({ allele, delay }) => (
@@ -74,9 +69,6 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ onAskAI }) => {
     { icon: BloodBagIcon, title: t('howItWorks.step3.title'), description: t('howItWorks.step3.desc') },
   ];
 
-  const punnettPrompt = t('howItWorks.punnett.aiPrompt');
-  const transfusionPrompt = t('howItWorks.transfusionDiagram.aiPrompt');
-
   return (
     <Card>
       <h2 className="text-3xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-rose-500">{t('howItWorks.title')}</h2>
@@ -101,16 +93,8 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ onAskAI }) => {
             <h3 className="text-xl font-semibold mb-2 text-gray-200">{t('howItWorks.punnett.title')}</h3>
             <p className="text-gray-400 text-sm leading-relaxed mb-6">{t('howItWorks.punnett.desc')}</p>
         </div>
-        <div className="relative group">
-          <div className="flex justify-center pt-8">
-            <PunnettSquare />
-          </div>
-           <AskAIButton
-            prompt={punnettPrompt}
-            onAsk={onAskAI}
-            className="absolute top-0 left-1/2 -translate-x-1/2"
-            contextType="punnettSquare"
-           />
+        <div className="flex justify-center pt-8">
+          <PunnettSquare />
         </div>
       </div>
        <div className="mt-10 pt-8 border-t border-gray-700/50 text-center">
@@ -118,27 +102,19 @@ const HowItWorks: React.FC<HowItWorksProps> = ({ onAskAI }) => {
               <h3 className="text-xl font-semibold mb-2 text-gray-200">{t('howItWorks.transfusionDiagram.title')}</h3>
               <p className="text-gray-400 text-sm leading-relaxed mb-6">{t('howItWorks.transfusionDiagram.desc')}</p>
           </div>
-          <div className="relative group">
-            <div className="pt-8 space-y-4">
-                <TransfusionRule donor="A+" recipients={[
-                    { type: 'A+', compatible: true }, { type: 'AB+', compatible: true },
-                    { type: 'B+', compatible: false }, { type: 'O-', compatible: false }
-                ]} />
-                <TransfusionRule donor="O-" recipients={[
-                    { type: 'A+', compatible: true }, { type: 'B-', compatible: true },
-                    { type: 'AB+', compatible: true }, { type: 'O+', compatible: true }
-                ]} />
-                <p className="text-xs text-gray-500 pt-2">{t('howItWorks.transfusionDiagram.rhNote')}</p>
-            </div>
-            <AskAIButton
-              prompt={transfusionPrompt}
-              onAsk={onAskAI}
-              className="absolute top-0 left-1/2 -translate-x-1/2"
-              contextType="transfusionRules"
-            />
+          <div className="pt-8 space-y-4">
+              <TransfusionRule donor="A+" recipients={[
+                  { type: 'A+', compatible: true }, { type: 'AB+', compatible: true },
+                  { type: 'B+', compatible: false }, { type: 'O-', compatible: false }
+              ]} />
+              <TransfusionRule donor="O-" recipients={[
+                  { type: 'A+', compatible: true }, { type: 'B-', compatible: true },
+                  { type: 'AB+', compatible: true }, { type: 'O+', compatible: true }
+              ]} />
+              <p className="text-xs text-gray-500 pt-2">{t('howItWorks.transfusionDiagram.rhNote')}</p>
           </div>
       </div>
-      <FormulaDisplay onAskAI={onAskAI} />
+      <FormulaDisplay />
     </Card>
   );
 };

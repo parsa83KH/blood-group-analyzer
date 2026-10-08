@@ -1,5 +1,13 @@
 import { Person, FamilyAnalysisResult, MemberAnalysisResult, ABOAnalysisResult, RHAnalysisResult, ProbabilityMap, GenotypeCombination, RHGenotypeCombination, TransfusionCompatibility, TransfusionSummary } from '@/types';
 
+function codedError(key: string, options: Record<string, string | number> = {}): string {
+    return JSON.stringify({ key, options });
+}
+
+function childOptions(indexes: number[]): Record<string, string | number> {
+    return { childIndexes: indexes.join(','), childCount: indexes.length };
+}
+
 class BloodCompatibility {
     private abo_can_donate_to: Record<string, string[]> = {
         'A': ['A', 'AB'],
@@ -131,10 +139,84 @@ class ABOCalculator {
         return possible_children.filter(child => child_genotypes.includes(child));
     }
 
+    private _can_provide_abo_allele(blood_type: string, allele: string): boolean {
+        if (!blood_type || blood_type === 'Unknown') return true;
+        return this._get_genotypes(blood_type).some(genotype => genotype.includes(allele));
+    }
+
+    private _analyze_abo_incompatibility(father: string, mother: string, children: string[]): Record<'O' | 'A' | 'B' | 'AB', number[]> {
+        const result = { O: [] as number[], A: [] as number[], B: [] as number[], AB: [] as number[] };
+        const fatherGenotypes = this._get_genotypes(father);
+        const motherGenotypes = this._get_genotypes(mother);
+
+        children.forEach((child, idx) => {
+            if (!child || child === 'Unknown') return;
+            const childGenotypes = this._get_genotypes(child);
+            const possible = fatherGenotypes.some(fg =>
+                motherGenotypes.some(mg => {
+                    const possibleChildren = this.get_possible_child_genotypes(fg, mg);
+                    return childGenotypes.some(cg => possibleChildren.includes(cg));
+                })
+            );
+            if (possible) return;
+            if (child === 'O' || child === 'OO') result.O.push(idx + 1);
+            else if (child === 'A' || child === 'AA' || child === 'AO') result.A.push(idx + 1);
+            else if (child === 'B' || child === 'BB' || child === 'BO') result.B.push(idx + 1);
+            else if (child === 'AB') result.AB.push(idx + 1);
+        });
+
+        return result;
+    }
+
+    private _create_abo_error_message(father: string, mother: string, children: string[]): string | null {
+        const analysis = this._analyze_abo_incompatibility(father, mother, children);
+        if (analysis.O.length) return this._format_o_child_error(father, mother, analysis.O);
+        if (analysis.A.length) return this._format_allele_child_error(father, mother, analysis.A, 'A');
+        if (analysis.B.length) return this._format_allele_child_error(father, mother, analysis.B, 'B');
+        if (analysis.AB.length) return this._format_ab_child_error(father, mother, analysis.AB);
+        return null;
+    }
+
+    private _format_o_child_error(father: string, mother: string, indexes: number[]): string {
+        const base = { ...childOptions(indexes), father, mother, allele: 'O', blood_type: 'O' };
+        const fatherCan = this._can_provide_abo_allele(father, 'O');
+        const motherCan = this._can_provide_abo_allele(mother, 'O');
+        if (!fatherCan && !motherCan) return codedError('error.abo.oChild_impossible_both', base);
+        if (!fatherCan) return codedError('error.abo.oChild_impossible_father', base);
+        if (!motherCan) return codedError('error.abo.oChild_impossible_mother', base);
+        return codedError('error.abo.oChild_impossible', base);
+    }
+
+    private _format_allele_child_error(father: string, mother: string, indexes: number[], allele: 'A' | 'B'): string {
+        const base = { ...childOptions(indexes), father, mother, allele, blood_type: allele };
+        const fatherCan = this._can_provide_abo_allele(father, allele);
+        const motherCan = this._can_provide_abo_allele(mother, allele);
+        const neitherKey = allele === 'A' ? 'error.abo.aChild_impossible' : 'error.abo.bChild_impossible';
+        const comboKey = allele === 'A' ? 'error.abo.aChild_impossible_combo' : 'error.abo.bChild_impossible_combo';
+        if (!fatherCan && !motherCan) return codedError(neitherKey, base);
+        return codedError(comboKey, base);
+    }
+
+    private _format_ab_child_error(father: string, mother: string, indexes: number[]): string {
+        const base = { ...childOptions(indexes), father, mother, alleles: 'A, B', blood_type: 'AB' };
+        const fatherA = this._can_provide_abo_allele(father, 'A');
+        const motherA = this._can_provide_abo_allele(mother, 'A');
+        const fatherB = this._can_provide_abo_allele(father, 'B');
+        const motherB = this._can_provide_abo_allele(mother, 'B');
+        if (!fatherA && !motherA) return codedError('error.abo.abChild_impossible_noA', { ...base, allele: 'A' });
+        if (!fatherB && !motherB) return codedError('error.abo.abChild_impossible_noB', { ...base, allele: 'B' });
+        return codedError('error.abo.abChild_impossible', base);
+    }
+
     public analyze_family(father: string, mother: string, children: string[]): ABOAnalysisResult {
         const error = this._validate_all_inputs(father, mother, children);
         if (error) return { valid: false, errors: [error], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
-        
+
+        const specificError = this._create_abo_error_message(father, mother, children);
+        if (specificError) {
+            return { valid: false, errors: [specificError], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
+        }
+
         const father_genotypes = this._get_genotypes(father);
         const mother_genotypes = this._get_genotypes(mother);
         const combinations: GenotypeCombination[] = [];
@@ -151,12 +233,7 @@ class ABOCalculator {
         }
         
         if (combinations.length === 0) {
-            const errorPayload = {
-                type: 'ai_explanation_required',
-                system: 'ABO',
-                context: { father, mother, children }
-            };
-            return { valid: false, errors: [JSON.stringify(errorPayload)], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
+            return { valid: false, errors: [codedError('error.abo.noValidCombinations')], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
         }
         
         const possible_father_genotypes = new Set(combinations.map(c => c.father));
@@ -216,6 +293,61 @@ class RHCalculator {
         return possible_children.filter(child => child_genotypes.includes(child));
     }
     
+    private _can_provide_rh_allele(blood_type: string, allele: string): boolean {
+        if (!blood_type || blood_type === 'Unknown') return true;
+        return this._get_genotypes(blood_type).some(genotype => genotype.includes(allele));
+    }
+
+    private _create_rh_error_message(father: string, mother: string, children: string[]): string {
+        const ddChildren = children.flatMap((child, i) => (child === 'DD' ? [i + 1] : []));
+        if (ddChildren.length) {
+            const fatherCanD = this._can_provide_rh_allele(father, 'D');
+            const motherCanD = this._can_provide_rh_allele(mother, 'D');
+            const base = { ...childOptions(ddChildren), father, mother, genotype: 'DD', allele: 'D' };
+            if (!fatherCanD && father !== 'Unknown') return codedError('error.rh.DD_child_impossible_father', { ...base, parent_value: father });
+            if (!motherCanD && mother !== 'Unknown') return codedError('error.rh.DD_child_impossible_mother', { ...base, parent_value: mother });
+            if (!fatherCanD && !motherCanD) return codedError('error.rh.DD_child_impossible_both', base);
+        }
+
+        const negativeChildren = children.flatMap((child, i) => (child === '-' || child === 'dd' ? [i + 1] : []));
+        if (negativeChildren.length) {
+            const fatherCanD = this._can_provide_rh_allele(father, 'd');
+            const motherCanD = this._can_provide_rh_allele(mother, 'd');
+            const base = { ...childOptions(negativeChildren), father, mother, blood_type: '-', allele: 'd' };
+            if (!fatherCanD && father !== 'Unknown') return codedError('error.rh.negative_child_impossible_father', { ...base, parent_value: father });
+            if (!motherCanD && mother !== 'Unknown') return codedError('error.rh.negative_child_impossible_mother', { ...base, parent_value: mother });
+            if (!fatherCanD && !motherCanD) return codedError('error.rh.negative_child_impossible_both', base);
+        }
+
+        const heterozygousChildren = children.flatMap((child, i) => (child === 'Dd' ? [i + 1] : []));
+        if (heterozygousChildren.length && father === 'DD' && mother === 'DD') {
+            return codedError('error.rh.Dd_child_impossible_DD_parents', {
+                ...childOptions(heterozygousChildren),
+                genotype: 'Dd',
+                parent_genotype: 'DD',
+                father,
+                mother,
+            });
+        }
+
+        const positiveChildren = children.flatMap((child, i) => (child === '+' || child === 'DD' || child === 'Dd' ? [i + 1] : []));
+        if (positiveChildren.length) {
+            const fatherCanD = this._can_provide_rh_allele(father, 'D');
+            const motherCanD = this._can_provide_rh_allele(mother, 'D');
+            if (!fatherCanD && !motherCanD && father !== 'Unknown' && mother !== 'Unknown') {
+                return codedError('error.rh.positive_child_impossible', {
+                    ...childOptions(positiveChildren),
+                    father,
+                    mother,
+                    blood_type: '+',
+                    allele: 'D',
+                });
+            }
+        }
+
+        return codedError('error.rh.genericIncompatibility');
+    }
+
     public analyze_family(father: string, mother: string, children: string[]): RHAnalysisResult {
         const error = this._validate_all_inputs(father, mother, children);
         if (error) return { valid: false, errors: [error], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
@@ -236,12 +368,7 @@ class RHCalculator {
         }
         
         if (combinations.length === 0) {
-            const errorPayload = {
-                type: 'ai_explanation_required',
-                system: 'RH',
-                context: { father, mother, children }
-            };
-            return { valid: false, errors: [JSON.stringify(errorPayload)], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
+            return { valid: false, errors: [this._create_rh_error_message(father, mother, children)], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] };
         }
 
         const possible_father_genotypes = new Set(combinations.map(c => c.father));

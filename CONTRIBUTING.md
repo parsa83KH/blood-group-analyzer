@@ -9,7 +9,6 @@ Thank you for your interest in contributing to the Blood Group Analyzer project!
 - Node.js (v18 or higher)
 - npm or yarn
 - Git
-- A Google Gemini API key
 
 ### Development Setup
 
@@ -24,13 +23,7 @@ Thank you for your interest in contributing to the Blood Group Analyzer project!
    npm install
    ```
 
-3. **Set up environment variables:**
-   ```bash
-   cp .env.example .env
-   # Add your Gemini API key to .env
-   ```
-
-4. **Start development server:**
+3. **Start development server:**
    ```bash
    npm run dev
    ```

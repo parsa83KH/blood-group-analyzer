@@ -88,3 +88,11 @@ export function generateId(): string {
 export function sleep(ms: number): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+/**
+ * True on touch-primary devices (phones/tablets) where 3D hover/tilt should be disabled.
+ */
+export function isTouchPrimaryDevice(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia('(hover: none), (pointer: coarse)').matches;
+}

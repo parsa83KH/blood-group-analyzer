@@ -52,9 +52,3 @@ export function sanitizeHtml(html: string): string {
   return div.innerHTML;
 }
 
-/**
- * Validate API key format
- */
-export function isValidApiKey(apiKey: string): boolean {
-  return typeof apiKey === 'string' && apiKey.length > 10 && !apiKey.includes(' ');
-}

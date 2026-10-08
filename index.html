@@ -59,6 +59,19 @@
       .interactive-tilt-box-content {
           transform: translateZ(20px);
       }
+
+      /* Disable 3D tilt/hover on touch-primary devices (phones, tablets) */
+      @media (hover: none), (pointer: coarse) {
+          .interactive-tilt-box,
+          .interactive-tilt-box.is-hovering {
+              transform: none !important;
+              transition: none;
+              z-index: auto;
+          }
+          .interactive-tilt-box-content {
+              transform: none;
+          }
+      }
       
       /* Give an individual input card a higher z-index to stack over its siblings */
       .interactive-tilt-box:has(.select-is-open) {
@@ -376,7 +389,7 @@
         margin-block: 2em;
       }
 
-      /* Loading dots animation for AI Assistant */
+      /* Loading dots animation */
       .loading-dots span {
         animation: dot-bounce 1.4s infinite ease-in-out both;
         display: inline-block;

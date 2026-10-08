@@ -46,23 +46,20 @@
       "desc": "This tool helps visualize how parents' alleles combine. For instance, if a child has Type O blood, they must have inherited an 'O' allele from each parent. Therefore, a Type 'A' parent of a Type 'O' child must have the genotype AO, not AA.",
       "parent1": "Parent 1",
       "parent2": "Parent 2",
-      "results": "Possible Results",
-      "aiPrompt": "Explain the Punnett Square example shown in the 'How It Works' section. What do the letters (A, O) and (B, O) for the parents represent? How does this grid predict the four possible children genotypes (AB, AO, BO, OO) and what is the probability for each?"
+      "results": "Possible Results"
     },
     "transfusionDiagram": {
       "title": "Transfusion Rules Example",
       "desc": "A person with Type A blood has 'A' antigens on their red blood cells. Their immune system will attack 'B' antigens. Therefore, they can donate to other 'A' types and 'AB' types (who have both antigens), but not 'B' or 'O' types.",
       "donor": "Donor",
       "recipient": "Recipient",
-      "rhNote": "Note: Rh-negative blood can be given to Rh-positive recipients, but not vice-versa.",
-      "aiPrompt": "Explain the transfusion rules shown in the example. Why can an A+ donor give to A+ and AB+, but not B+ or O-? And why is an O- donor considered a universal donor, able to give to all the types shown?"
+      "rhNote": "Note: Rh-negative blood can be given to Rh-positive recipients, but not vice-versa."
     },
     "formulas": {
       "title": "The Science Behind the Calculations",
       "categoryHeader": "Formula Category",
       "formulaHeader": "Mathematical Formula",
       "exampleHeader": "Practical Example",
-      "aiPrompt": "Explain the formula for '{{category}}' which is represented as '{{formula}}'. What does this formula mean and how is it applied in this app to analyze blood genetics?",
       "categories": {
         "genoToPheno": "Genotype to Phenotype",
         "rhInheritance": "RH Inheritance",
@@ -117,14 +114,12 @@
     "rhPheno": "RH Phenotype Probabilities",
     "rhGeno": "RH Genotype Probabilities",
     "hybridGeno": "Hybrid Genotype Probabilities",
-    "hybridPheno": "Hybrid Phenotype Probabilities",
-    "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Member: {{member}}\n- Analysis Type: {{chartTitle}}\n- Calculated Probabilities: {{chartData}}\n\nQUESTION: Based on the family inputs, please explain in simple terms:\n1. How were these specific probabilities calculated?\n2. What do these results tell us about the member's likely blood type?"
+    "hybridPheno": "Hybrid Phenotype Probabilities"
   },
   "transfusion": {
     "title": "Transfusion Compatibility",
     "receive": "Can Receive From",
     "donate": "Can Donate To",
-    "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Member Being Analyzed: {{member}}\n- Member's Potential Blood Types (Probabilities): {{memberPhenoProbs}}\n- Analysis Type: {{analysisType}}\n- Calculated Compatibility Probabilities: {{compatibilityData}}\n\nQUESTION: Based on the information above, please explain in simple terms:\n1. How is the member's list of potential blood types (e.g., {{memberPhenoProbs}}) used to determine these compatibility chances for '{{analysisType}}'?\n2. What do the 'Calculated Compatibility Probabilities' signify? For instance, if it says they can donate to 'A+' with a certain probability, what does that mean in this context?",
     "noDonors": "No compatible donors.",
     "noRecipients": "No compatible recipients.",
     "insufficientData": "Insufficient data for transfusion analysis.",
@@ -144,7 +139,6 @@
     "unexpected": "An unexpected error occurred during analysis. Please check your inputs and try again.",
     "unexpectedDetailed": "Error analyzing blood types: {{error}}",
     "allUnknown": "Please enter at least one blood type for analysis.",
-    "aiPrompt": "CONTEXT:\n- Family Inputs: {{familyInputs}}\n- Error Message: \"{{error}}\"\n\nQUESTION: Based on the provided family inputs, please explain in simple, clear terms what this genetic error means and why it occurred. Avoid technical jargon where possible.",
     "entities": {
       "child_single": "Child ({{number}})",
       "children_list": "Children ({{list}})"
@@ -161,7 +155,11 @@
       "oChild_impossible_both": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. Neither the father *({{father}})* nor the mother *({{mother}})* can provide the required *'{{allele}}'* allele.",
       "aChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
       "bChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
-      "abChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. The combination of parents (*{{father}}*, *{{mother}}*) cannot provide both *'{{alleles}}'* alleles."
+      "abChild_impossible": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. The combination of parents (*{{father}}*, *{{mother}}*) cannot provide both *'{{alleles}}'* alleles.",
+      "aChild_impossible_combo": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. With parents *({{father}})* and *({{mother}})*, this combination cannot produce children who need an *'{{allele}}'* allele.",
+      "bChild_impossible_combo": "__ABO Error:__ *{{child_entity}}* with blood type *({{blood_type}})* is impossible. With parents *({{father}})* and *({{mother}})*, this combination cannot produce children who need a *'{{allele}}'* allele.",
+      "abChild_impossible_noA": "__ABO Error:__ *{{child_entity}}* with blood type *(AB)* is impossible. Neither parent (*({{father}})* and *({{mother}})*) can provide an *'A'* allele.",
+      "abChild_impossible_noB": "__ABO Error:__ *{{child_entity}}* with blood type *(AB)* is impossible. Neither parent (*({{father}})* and *({{mother}})*) can provide a *'B'* allele."
     },
     "rh": {
       "invalidInput": "RH Error: Invalid Rh factor entered. Please check the inputs.",
@@ -174,55 +172,10 @@
       "negative_child_impossible_both": "__RH Error:__ *{{child_entity}}* with *{{blood_type}}* blood is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
       "positive_child_impossible": "__RH Error:__ *{{child_entity}}* with *{{blood_type}}* blood is impossible. Neither parent (*{{father}}*, *{{mother}}*) can provide the required *'{{allele}}'* allele.",
       "DD_child_impossible": "__RH Error:__ *{{child_entity}}* with genotype *({{genotype}})* is impossible, as a *'{{allele}}'* allele cannot be provided by both parents.",
-      "Dd_child_impossible_DD_parents": "__RH Error:__ *{{child_entity}}* with genotype *({{genotype}})* is impossible from two *({{parent_genotype}})* parents, who can only create *({{parent_genotype}})* offspring."
+      "Dd_child_impossible_DD_parents": "__RH Error:__ *{{child_entity}}* with genotype *({{genotype}})* is impossible from two *({{parent_genotype}})* parents, who can only create *({{parent_genotype}})* offspring.",
+      "DD_child_impossible_father": "__RH Error:__ *{{child_entity}}* with genotype *(DD)* is impossible. The father with input *({{parent_value}})* cannot provide a *'D'* allele.",
+      "DD_child_impossible_mother": "__RH Error:__ *{{child_entity}}* with genotype *(DD)* is impossible. The mother with input *({{parent_value}})* cannot provide a *'D'* allele.",
+      "DD_child_impossible_both": "__RH Error:__ *{{child_entity}}* with genotype *(DD)* is impossible. Parents *({{father}})* and *({{mother}})* cannot both provide a *'D'* allele."
     }
-  },
-  "aiErrorLoadingTexts": [
-    "Analyzing genetic inconsistencies...",
-    "Consulting with genetic models...",
-    "Cross-referencing inheritance patterns...",
-    "Formulating a detailed explanation...",
-    "Checking Punnett square possibilities...",
-    "Reviewing Mendelian laws...",
-    "A few moments...",
-    "Pinpointing the source of the anomaly...",
-    "Finalizing the genetic report...",
-    "Just a moment longer..."
-  ],
-  "aiAssistant": {
-    "title": "Ask Geno, Your AI Blood Expert",
-    "placeholder": "Ask any question...",
-    "send": "Send",
-    "thinking": "Geno is thinking...",
-    "error": "I'm sorry, I'm having trouble processing your request right now. Please try again in a moment.",
-    "initialMessage": "Hello! I'm Geno, your AI assistant, specialized in blood genetics and this application's functions. How can I help you today?",
-    "askAboutThis": "Ask AI assistant about this section",
-    "askAction": "Ask Geno",
-    "contextSentTitle": "Context Sent",
-    "contextSentMessage": "Information from this section was sent to Geno",
-    "contextMessages": {
-      "punnettSquare": "Punnett Square inheritance example was sent to Geno",
-      "transfusionRules": "Blood transfusion compatibility rules were sent to Geno",
-      "formula": "Mathematical formula for {{category}} was sent to Geno",
-      "aboPhenotype": "ABO phenotype probability chart for {{member}} was sent to Geno",
-      "aboGenotype": "ABO genotype probability chart for {{member}} was sent to Geno",
-      "rhPhenotype": "RH phenotype probability chart for {{member}} was sent to Geno",
-      "rhGenotype": "RH genotype probability chart for {{member}} was sent to Geno",
-      "hybridGenotype": "Hybrid genotype probability chart for {{member}} was sent to Geno",
-      "hybridPhenotype": "Hybrid phenotype probability chart for {{member}} was sent to Geno",
-      "transfusionReceive": "Blood transfusion receiving compatibility analysis for {{member}} was sent to Geno",
-      "transfusionDonate": "Blood transfusion donation compatibility analysis for {{member}} was sent to Geno"
-    }
-  },
-  "aiSystemInstruction": {
-    "base": "You are an expert AI assistant embedded in the 'Blood Group Analyzer' web application. Your name is 'Geno'. Your purpose is to help users understand blood genetics, transfusion compatibility, and how to use this specific application.\n\n**About the 'Blood Group Analyzer' App:**\n- **Core Functionality:** {{coreFunctionality}}\n- **Inputs:** {{inputs}}\n- **Outputs:** {{outputs}}\n- **'How It Works' Section:** {{howItWorks}}\n- **Technology:** {{technology}}\n- **Languages:** {{languages}}\n\n**Your Persona & Guidelines:**\n- {{persona}}\n- {{safety}}\n- **Language:** Respond in the language the user asks the question in. The current user language is: {{language}}.",
-    "coreFunctionality": "It's a tool for genetic analysis of blood types (ABO and RH systems). Users can input the blood types of family members (father, mother, children) to see possible genetic combinations, calculate probabilities for each person's genotype and phenotype, and analyze blood transfusion compatibility.",
-    "inputs": "Users provide blood types as phenotypes (e.g., A, B, O, AB, +, -) or genotypes (e.g., AA, AO, BO, DD, Dd). 'Unknown' is a valid input if a blood type is not known.",
-    "outputs": "The app displays detailed results for each family member, including: ABO & RH phenotype/genotype probabilities (shown in tables and pie charts), full blood type probabilities (e.g., A+, O-), and transfusion compatibility analysis (who they can donate to and receive from).",
-    "howItWorks": "The app has an educational section that explains Mendelian inheritance using Punnett squares, transfusion rules, and the mathematical formulas behind the calculations.",
-    "technology": "It's a modern web app built with React, TypeScript, and features a dynamic 3D background using Three.js to visualize blood cells and DNA strands.",
-    "languages": "The app supports English (en) and Persian (fa).",
-    "persona": "Be an Expert: Answer questions accurately about blood genetics, inheritance patterns, and transfusion science. Be App-Aware: If a user asks about the app ('how do I add a child?', 'what does the pie chart show?'), use your knowledge of the app's features to answer them. Be Friendly and Encouraging: Use a helpful and clear tone. Keep it Concise: Provide direct answers without unnecessary fluff. Handle Ambiguity: If a question is unclear, ask for clarification.",
-    "safety": "Safety: Do not provide medical advice. If a user asks for a diagnosis or medical recommendation, gently decline and advise them to consult a healthcare professional. For example: \"As an AI, I cannot provide medical advice. Please consult with a doctor or a qualified healthcare provider for any medical concerns.\""
   }
 }

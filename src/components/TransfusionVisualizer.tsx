@@ -1,74 +1,22 @@
 import React from 'react';
-import { TransfusionCompatibility, ProbabilityMap, TransfusionSummary, Person, MemberAnalysisResult } from '../types';
+import { TransfusionCompatibility, ProbabilityMap, TransfusionSummary } from '../types';
 import { ArrowDownTrayIcon, ArrowUpTrayIcon } from './icons';
 import ResultsTable from './ResultsTable';
 import { useLanguage } from '../i18n/LanguageContext';
-import AskAIButton from './AskAIButton';
-
-// Helper to format family data for the AI prompt
-const formatFamilyForPrompt = (family: Person[], t: (key: string) => string): string => {
-    return family.map((p, i) => {
-        const name = i === 0 ? t('father') : i === 1 ? t('mother') : `${t('child')} ${i - 1}`;
-        return `${name}: ABO=${p.ABO}, RH=${p.RH}`;
-    }).join('; ');
-};
-
-// Helper to format probability data for the AI prompt
-const formatProbabilitiesForPrompt = (data: ProbabilityMap): string => {
-    if (Object.keys(data).length === 0) return 'N/A';
-    return Object.entries(data)
-        .map(([type, prob]) => `${type}: ${prob.toFixed(2)}%`)
-        .join(', ');
-};
-
-// Helper to get a consistent, translated member name
-const getMemberName = (name: string, t: (key: string, options?: Record<string, string | number>) => string): string => {
-    if (name === 'father') return t('father');
-    if (name === 'mother') return t('mother');
-    const match = name.match(/child(\d+)/);
-    if (match) {
-        return `${t('child')} ${parseInt(match[1], 10)}`;
-    }
-    return name;
-};
 
 interface TransfusionSectionProps {
     title: string;
     data: ProbabilityMap;
     icon: React.ReactNode;
     colorClass: string;
-    analysis: MemberAnalysisResult;
-    family: Person[];
-    onAskAI: (prompt: string, contextType?: string, contextData?: Record<string, any>) => void;
-    contextType: string;
+    emptyMessage: string;
 }
 
-const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, icon, colorClass, analysis, family, onAskAI, contextType }) => {
-    const { t } = useLanguage();
+const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, icon, colorClass, emptyMessage }) => {
     const hasData = Object.keys(data).length > 0;
-
-    const familyInputs = formatFamilyForPrompt(family, t);
-    const memberName = getMemberName(analysis.member, t);
-    const memberPhenoProbs = formatProbabilitiesForPrompt(analysis.hybrid_phenotype_probabilities);
-    const compatibilityData = formatProbabilitiesForPrompt(data);
-    
-    const aiPrompt = t('transfusion.aiPrompt', {
-        familyInputs: familyInputs,
-        member: memberName,
-        memberPhenoProbs: memberPhenoProbs || 'N/A',
-        analysisType: title,
-        compatibilityData: compatibilityData,
-    });
 
     return (
         <div className="relative group flex flex-col items-center">
-             <AskAIButton
-                prompt={aiPrompt}
-                onAsk={onAskAI}
-                className="top-2 right-2 rtl:left-2 rtl:right-auto z-10"
-                contextType={contextType}
-                contextData={{ member: memberName }}
-            />
             <h5 className={`flex items-center gap-2 text-lg font-semibold mb-4 ${colorClass}`}>
                 {icon}
                 {title}
@@ -80,7 +28,7 @@ const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, ic
             ) : (
                 <div className="w-full bg-gray-800/30 p-4 rounded-lg border border-gray-700/50 flex items-center justify-center min-h-[100px]">
                     <p className="text-gray-500 text-center">
-                        {title.includes(t('transfusion.receive')) ? t('transfusion.noDonors') : t('transfusion.noRecipients')}
+                        {emptyMessage}
                     </p>
                 </div>
             )}
@@ -90,12 +38,9 @@ const TransfusionSection: React.FC<TransfusionSectionProps> = ({ title, data, ic
 
 interface TransfusionVisualizerProps {
     compatibility: TransfusionCompatibility;
-    analysis: MemberAnalysisResult;
-    family: Person[];
-    onAskAI: (prompt: string) => void;
 }
 
-const TransfusionVisualizer: React.FC<TransfusionVisualizerProps> = ({ compatibility, analysis, family, onAskAI }) => {
+const TransfusionVisualizer: React.FC<TransfusionVisualizerProps> = ({ compatibility }) => {
     const { t } = useLanguage();
     const { can_receive_from, can_donate_to, summary } = compatibility;
 
@@ -138,20 +83,14 @@ const TransfusionVisualizer: React.FC<TransfusionVisualizerProps> = ({ compatibi
                         data={can_receive_from}
                         icon={<ArrowDownTrayIcon className="h-6 w-6" />}
                         colorClass="text-green-400"
-                        analysis={analysis}
-                        family={family}
-                        onAskAI={onAskAI}
-                        contextType="transfusionReceive"
+                        emptyMessage={t('transfusion.noDonors')}
                     />
                     <TransfusionSection
                         title={t('transfusion.donate')}
                         data={can_donate_to}
                         icon={<ArrowUpTrayIcon className="h-6 w-6" />}
                         colorClass="text-blue-400"
-                        analysis={analysis}
-                        family={family}
-                        onAskAI={onAskAI}
-                        contextType="transfusionDonate"
+                        emptyMessage={t('transfusion.noRecipients')}
                     />
                 </div>
             )}

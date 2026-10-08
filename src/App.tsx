@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Person, FamilyAnalysisResult, MemberAnalysisResult, AIAssistantHandle } from '@/types';
-import { apiService } from '@/services/api';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Person, FamilyAnalysisResult, MemberAnalysisResult } from '@/types';
 import BloodInputForm from '@/components/BloodInputForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
 import HowItWorks from '@/components/HowItWorks';
@@ -9,7 +8,6 @@ import { QuestionMarkCircleIcon } from '@/components/icons';
 import { BloodTypeCalculator } from '@/services/bloodCalculator';
 import { useLanguage } from '@/i18n/LanguageContext';
 import AnimatedSection from '@/components/ui/AnimatedSection';
-import AIAssistant from '@/components/AIAssistant';
 
 type AnalysisCompletionStatus = 'idle' | 'success' | 'error';
 
@@ -22,13 +20,9 @@ const App: React.FC = () => {
     const [analysisResult, setAnalysisResult] = useState<FamilyAnalysisResult | null>(null);
     const [memberAnalyses, setMemberAnalyses] = useState<MemberAnalysisResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [isAiExplaining, setIsAiExplaining] = useState(false);
     const [showHowItWorks, setShowHowItWorks] = useState(false);
     const [analysisCompletionStatus, setAnalysisCompletionStatus] = useState<AnalysisCompletionStatus>('idle');
     const [resultKey, setResultKey] = useState(0);
-
-    const aiAssistantRef = useRef<AIAssistantHandle>(null);
-    const aiSectionRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         document.documentElement.lang = language;
@@ -53,7 +47,6 @@ const App: React.FC = () => {
         setResultKey(k => k + 1); // Force re-mount of results display
         setAnalysisResult(null);
         setMemberAnalyses([]);
-        setIsAiExplaining(false);
 
         try {
             const calculator = new BloodTypeCalculator();
@@ -62,83 +55,26 @@ const App: React.FC = () => {
             const children = family.slice(2);
 
             const familyResult = calculator.analyze_family(father, mother, children);
+            setAnalysisResult(familyResult);
 
-            // Prioritize checking for AI-explainable genetic impossibilities.
-            // This is crucial because a result can have `valid: true` (if one system like ABO is valid)
-            // but still contain a genetic error in another system (like RH) that needs explanation.
-            const aiErrors = (familyResult.errors || []).map(err => {
-                try {
-                    const parsed = JSON.parse(err);
-                    if (parsed.type === 'ai_explanation_required') return parsed;
-                } catch { /* not a JSON error */ }
-                return null;
-            }).filter(Boolean);
+            const hasErrors = familyResult.errors && familyResult.errors.length > 0;
 
-            if (aiErrors.length > 0) {
-                setAnalysisCompletionStatus('error');
-                // Force the result to be invalid and show a loading state for the AI explanation.
-                setAnalysisResult({ ...familyResult, valid: false, errors: ["ai_loading_placeholder"] });
-                setIsAiExplaining(true);
-                setIsLoading(false); // Stop the button loading animation immediately
-                
-                await (async () => {
-                    try {
-                        const formatPersonForPrompt = (p: Person, name: string) => `${name}: ABO=${p.ABO}, RH=${p.RH}`;
-                        const familyInputsString = [
-                            formatPersonForPrompt(father, t('father')),
-                            formatPersonForPrompt(mother, t('mother')),
-                            ...children.map((c, i) => formatPersonForPrompt(c, `${t('child')} ${i + 1}`))
-                        ].join('\n');
-                        
-                        const systems = [...new Set(aiErrors.map(e => e.system))];
-                        
-                        const response = await apiService.explainGeneticError({
-                            familyInputs: familyInputsString,
-                            systems,
-                            language
-                        });
-
-                        if (response.error) {
-                            throw new Error(response.error);
-                        }
-
-                        const aiExplanation = response.data?.explanation || t('aiAssistant.error');
-                        // Set the AI explanation and ensure the final state is marked as invalid.
-                        setAnalysisResult(prev => ({ ...prev!, valid: false, errors: [aiExplanation] }));
-                    } catch (error) {
-                         console.error("AI explanation fetch failed:", error);
-                         setAnalysisResult(prev => ({...prev!, valid: false, errors: [t('aiAssistant.error')]}));
-                    } finally {
-                         setIsAiExplaining(false);
-                    }
-                })();
+            if (familyResult.valid && !hasErrors) {
+                setAnalysisCompletionStatus('success');
+                const membersToAnalyze = ['father', 'mother', ...children.map((_, i) => `child${i + 1}`)];
+                const results = membersToAnalyze.map(memberIdentifier => {
+                    return calculator.analyze_member_probabilities(memberIdentifier, familyResult);
+                });
+                setMemberAnalyses(results);
             } else {
-                // If no AI errors, handle valid results or standard errors.
-                setAnalysisResult(familyResult);
-
-                const hasErrors = familyResult.errors && familyResult.errors.length > 0;
-
-                if (familyResult.valid && !hasErrors) {
-                    setAnalysisCompletionStatus('success');
-                    const membersToAnalyze = ['father', 'mother', ...children.map((_, i) => `child${i + 1}`)];
-                    const results = membersToAnalyze.map(memberIdentifier => {
-                        return calculator.analyze_member_probabilities(memberIdentifier, familyResult);
-                    });
-                    setMemberAnalyses(results);
-                } else {
-                    setAnalysisCompletionStatus('error');
-                }
+                setAnalysisCompletionStatus('error');
             }
         } catch (error: unknown) {
             console.error("Analysis failed:", error);
             setAnalysisCompletionStatus('error');
-            const errorMessage = (error instanceof Error && error.message.includes('API')) 
-                ? t('aiAssistant.error') 
-                : t('error.unexpected');
-
             setAnalysisResult({
                 valid: false,
-                errors: [errorMessage],
+                errors: ['error.unexpected'],
                 abo_result: { valid: false, errors: [], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] },
                 rh_result: { valid: false, errors: [], combinations: [], father_genotypes: new Set(), mother_genotypes: new Set(), children_genotypes: [] },
                 abo_valid: false,
@@ -147,16 +83,7 @@ const App: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [family, t, language]);
-
-    const handleAskAI = (prompt: string, contextType?: string, contextData?: Record<string, any>) => {
-        if (aiAssistantRef.current) {
-            aiAssistantRef.current.sendPrompt(prompt, true, contextType, contextData); // true indicates this is a context message
-        }
-        if (aiSectionRef.current) {
-            aiSectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    };
+    }, [family]);
 
     const handleGlowMouseMove = (e: React.MouseEvent<HTMLElement>) => {
         const el = e.currentTarget;
@@ -185,7 +112,7 @@ const App: React.FC = () => {
                         <p className="text-lg text-gray-400 max-w-3xl mx-auto">
                            {t('appTagline')}
                         </p>
-                       <div className="flex justify-center items-center gap-4 mt-6">
+                       <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 mt-6">
                            <LanguageSwitcher />
                            <button
                                onClick={() => setShowHowItWorks(prev => !prev)}
@@ -204,7 +131,7 @@ const App: React.FC = () => {
 
                     {showHowItWorks && (
                         <AnimatedSection className="my-12">
-                            <HowItWorks onAskAI={handleAskAI} />
+                            <HowItWorks />
                         </AnimatedSection>
                     )}
 
@@ -225,16 +152,8 @@ const App: React.FC = () => {
                             analysisResult={analysisResult}
                             memberAnalyses={memberAnalyses}
                             family={family}
-                            onAskAI={handleAskAI}
-                            isAiExplaining={isAiExplaining}
                         />
                     </AnimatedSection>
-                    
-                    <div ref={aiSectionRef}>
-                        <AnimatedSection className="mt-12">
-                            <AIAssistant ref={aiAssistantRef} />
-                        </AnimatedSection>
-                    </div>
                 </main>
                  <footer className="text-center mt-16 text-gray-500 text-sm space-y-2">
                     <p>&copy; 2024 {t('appTitle')}. {t('footerRights')}</p>

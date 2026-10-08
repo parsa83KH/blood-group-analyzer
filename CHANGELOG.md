@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial release of Blood Group Analyzer
-- AI-powered genetic analysis using Google Gemini
+- Family blood-type analysis with specific genetic conflict messages
 - Bilingual support (English/Persian)
 - Interactive UI with 3D effects and animations
 - Blood type compatibility analysis
@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Features
 - **Genetic Analysis Engine**: Mendelian inheritance calculations
-- **AI Assistant "Geno"**: Context-aware explanations
+- Specific ABO and RH conflict messages for impossible genotypes
 - **Interactive Charts**: Animated pie charts and visualizations
 - **Transfusion Analysis**: Compatibility probability calculations
 - **Educational Content**: How-it-works section with interactive diagrams
@@ -51,6 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - React 19 with TypeScript
 - Vite build system
 - Tailwind CSS for styling
-- Google Gemini API integration
+- Deterministic ABO and RH inheritance engine
 - Recharts for data visualization
 - Internationalization (i18n) support
