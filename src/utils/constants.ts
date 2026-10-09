@@ -9,7 +9,19 @@ export const APP_CONFIG = {
 } as const;
 
 export const BLOOD_TYPES = {
-  ABO_OPTIONS: ['Unknown', 'A', 'B', 'AB', 'O', 'AA', 'AO', 'BB', 'BO', 'AB', 'OO'] as const,
+  ABO_OPTIONS: [
+    'Unknown',
+    'A',
+    'B',
+    'AB',
+    'O',
+    'AA',
+    'AO',
+    'BB',
+    'BO',
+    'AB',
+    'OO',
+  ] as const,
   RH_OPTIONS: ['Unknown', '+', '-', 'DD', 'Dd', 'dd'] as const,
 } as const;
 

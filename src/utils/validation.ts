@@ -9,8 +9,12 @@ import { BLOOD_TYPES } from './constants';
  */
 export function isValidBloodType(abo: string, rh: string): boolean {
   return (
-    BLOOD_TYPES.ABO_OPTIONS.includes(abo as (typeof BLOOD_TYPES.ABO_OPTIONS)[number]) &&
-    BLOOD_TYPES.RH_OPTIONS.includes(rh as (typeof BLOOD_TYPES.RH_OPTIONS)[number])
+    BLOOD_TYPES.ABO_OPTIONS.includes(
+      abo as (typeof BLOOD_TYPES.ABO_OPTIONS)[number]
+    ) &&
+    BLOOD_TYPES.RH_OPTIONS.includes(
+      rh as (typeof BLOOD_TYPES.RH_OPTIONS)[number]
+    )
   );
 }
 
@@ -51,4 +55,3 @@ export function sanitizeHtml(html: string): string {
   div.textContent = html;
   return div.innerHTML;
 }
-
