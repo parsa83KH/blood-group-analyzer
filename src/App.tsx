@@ -11,6 +11,11 @@ import AnimatedSection from '@/components/ui/AnimatedSection';
 
 type AnalysisCompletionStatus = 'idle' | 'success' | 'error';
 
+const scrollElementIntoView = (element: HTMLElement | null) => {
+  if (!element) return;
+  element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
 const App: React.FC = () => {
   const { language, t } = useLanguage();
   const [family, setFamily] = useState<Person[]>([
@@ -24,7 +29,11 @@ const App: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
+  const [isHowItWorksLoading, setIsHowItWorksLoading] = useState(false);
   const howItWorksToggleRef = useRef<HTMLButtonElement>(null);
+  const howItWorksSectionRef = useRef<HTMLDivElement>(null);
+  const resultsSectionRef = useRef<HTMLDivElement>(null);
+  const shouldScrollToResultsRef = useRef(false);
   const [analysisCompletionStatus, setAnalysisCompletionStatus] =
     useState<AnalysisCompletionStatus>('idle');
   const [resultKey, setResultKey] = useState(0);
@@ -48,12 +57,60 @@ const App: React.FC = () => {
     }
   }, [analysisCompletionStatus]);
 
+  useEffect(() => {
+    if (!shouldScrollToResultsRef.current) return;
+
+    if (isLoading) {
+      const frameId = requestAnimationFrame(() => {
+        scrollElementIntoView(resultsSectionRef.current);
+      });
+      return () => cancelAnimationFrame(frameId);
+    }
+
+    if (!analysisResult) return;
+
+    // Wait a beat so the results/error card can paint, especially on phones.
+    const timeoutId = window.setTimeout(() => {
+      scrollElementIntoView(resultsSectionRef.current);
+      shouldScrollToResultsRef.current = false;
+    }, 100);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [isLoading, analysisResult, resultKey]);
+
+  const handleHowItWorksReady = useCallback(() => {
+    setIsHowItWorksLoading(false);
+    requestAnimationFrame(() => {
+      scrollElementIntoView(howItWorksSectionRef.current);
+    });
+  }, []);
+
+  const handleHowItWorksToggle = useCallback(() => {
+    if (showHowItWorks || isHowItWorksLoading) {
+      setShowHowItWorks(false);
+      setIsHowItWorksLoading(false);
+      return;
+    }
+
+    setIsHowItWorksLoading(true);
+    setShowHowItWorks(true);
+    requestAnimationFrame(() => {
+      scrollElementIntoView(howItWorksSectionRef.current);
+    });
+  }, [showHowItWorks, isHowItWorksLoading]);
+
   const handleAnalysis = useCallback(async () => {
+    shouldScrollToResultsRef.current = true;
     setIsLoading(true);
     setAnalysisCompletionStatus('idle');
     setResultKey(k => k + 1); // Force re-mount of results display
     setAnalysisResult(null);
     setMemberAnalyses([]);
+
+    // Let React paint the analyzing state and scroll to it before computing.
+    await new Promise<void>(resolve => {
+      requestAnimationFrame(() => resolve());
+    });
 
     try {
       const calculator = new BloodTypeCalculator();
@@ -144,34 +201,78 @@ const App: React.FC = () => {
               <LanguageSwitcher />
               <button
                 ref={howItWorksToggleRef}
-                onClick={() => setShowHowItWorks(prev => !prev)}
+                onClick={handleHowItWorksToggle}
                 className="interactive-glow-border inline-flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 font-semibold px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700 hover:border-brand-accent hover:bg-brand-accent/20 hover:shadow-lg hover:shadow-brand-accent/20 transform hover:-translate-y-0.5"
-                aria-expanded={showHowItWorks}
+                aria-expanded={showHowItWorks || isHowItWorksLoading}
+                aria-busy={isHowItWorksLoading}
                 onMouseMove={handleGlowMouseMove}
                 onMouseEnter={handleGlowMouseEnter}
                 onMouseLeave={handleGlowMouseLeave}
                 style={{ borderRadius: '9999px' }}
               >
-                <QuestionMarkCircleIcon className="w-5 h-5" />
+                {isHowItWorksLoading ? (
+                  <svg
+                    className="w-5 h-5 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  <QuestionMarkCircleIcon className="w-5 h-5" />
+                )}
                 {t('howItWorks.title')}
               </button>
             </div>
           </header>
 
-          {showHowItWorks && (
-            <AnimatedSection className="my-12">
-              <HowItWorks
-                onShowLess={() => {
-                  setShowHowItWorks(false);
-                  requestAnimationFrame(() => {
-                    howItWorksToggleRef.current?.scrollIntoView({
-                      behavior: 'smooth',
-                      block: 'center',
-                    });
-                  });
-                }}
-              />
-            </AnimatedSection>
+          {(showHowItWorks || isHowItWorksLoading) && (
+            <div ref={howItWorksSectionRef} className="my-12 scroll-mt-4">
+              {isHowItWorksLoading && (
+                <div className="text-center py-16">
+                  <div className="animate-spin rounded-full h-14 w-14 border-b-2 border-brand-accent mx-auto"></div>
+                  <p className="mt-4 text-lg text-gray-400">{t('loading')}</p>
+                </div>
+              )}
+              {showHowItWorks && (
+                <div
+                  className={
+                    isHowItWorksLoading
+                      ? 'pointer-events-none fixed inset-x-0 top-0 -z-50 mx-auto w-full max-w-7xl px-4 opacity-0 sm:px-6 lg:px-8'
+                      : 'animate-fade-in'
+                  }
+                  aria-hidden={isHowItWorksLoading}
+                >
+                  <HowItWorks
+                    onReady={handleHowItWorksReady}
+                    onShowLess={() => {
+                      setShowHowItWorks(false);
+                      setIsHowItWorksLoading(false);
+                      requestAnimationFrame(() => {
+                        howItWorksToggleRef.current?.scrollIntoView({
+                          behavior: 'smooth',
+                          block: 'center',
+                        });
+                      });
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           )}
 
           <AnimatedSection className="mb-12">
@@ -187,6 +288,7 @@ const App: React.FC = () => {
           <AnimatedSection>
             <ResultsDisplay
               key={resultKey}
+              ref={resultsSectionRef}
               isLoading={isLoading}
               analysisResult={analysisResult}
               memberAnalyses={memberAnalyses}

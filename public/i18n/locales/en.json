@@ -25,6 +25,7 @@
   "rhHelper": "Phenotype (e.g. +) or Genotype (e.g. DD)",
   "analyze": "Analyze",
   "analyzing": "Analyzing...",
+  "loading": "Loading...",
   "memberAnalysisTitle": "{{member}} Analysis",
   "howItWorks": {
     "title": "How It Works",

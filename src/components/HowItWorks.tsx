@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import Card from './ui/Card';
 import { useLanguage } from '../i18n/LanguageContext';
 import {
@@ -11,10 +11,32 @@ import FormulaDisplay from './FormulaDisplay';
 
 interface HowItWorksProps {
   onShowLess: () => void;
+  onReady?: () => void;
 }
 
-const HowItWorks: React.FC<HowItWorksProps> = ({ onShowLess }) => {
+const HowItWorks: React.FC<HowItWorksProps> = ({ onShowLess, onReady }) => {
   const { t } = useLanguage();
+
+  useLayoutEffect(() => {
+    let cancelled = false;
+    let timeoutId = 0;
+    const frameId = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // Give the browser a moment to paint the heavy section before revealing it.
+        timeoutId = window.setTimeout(() => {
+          if (!cancelled) {
+            onReady?.();
+          }
+        }, 120);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(frameId);
+      window.clearTimeout(timeoutId);
+    };
+  }, [onReady]);
 
   const Allele: React.FC<{ allele: string; delay: number }> = ({
     allele,

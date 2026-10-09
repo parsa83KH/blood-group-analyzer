@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, forwardRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import {
@@ -190,128 +190,127 @@ interface ResultsDisplayProps {
   family: Person[];
 }
 
-const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
-  isLoading,
-  analysisResult,
-  memberAnalyses,
-  family,
-}) => {
-  const { t, language } = useLanguage();
-  const [selectedMember, setSelectedMember] = useState<string | null>(null);
-  const [isStickyActive, setIsStickyActive] = useState(false);
-  const memberSelectorRef = useRef<HTMLDivElement>(null);
+const ResultsDisplay = forwardRef<HTMLDivElement, ResultsDisplayProps>(
+  ({ isLoading, analysisResult, memberAnalyses, family }, ref) => {
+    const { t, language } = useLanguage();
+    const [selectedMember, setSelectedMember] = useState<string | null>(null);
+    const [isStickyActive, setIsStickyActive] = useState(false);
+    const memberSelectorRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (memberAnalyses.length > 0) {
-      setSelectedMember(memberAnalyses[0].member);
-    } else {
-      setSelectedMember(null);
-    }
-  }, [memberAnalyses]);
-
-  useEffect(() => {
-    const selectorElement = memberSelectorRef.current;
-    if (!selectorElement || memberAnalyses.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        // The header becomes "sticky" when the selector element is scrolled completely above the viewport.
-        setIsStickyActive(
-          !entry.isIntersecting && entry.boundingClientRect.bottom < 0
-        );
-      },
-      { threshold: [0, 1] }
-    );
-
-    observer.observe(selectorElement);
-
-    return () => {
-      if (selectorElement) {
-        observer.unobserve(selectorElement);
+    useEffect(() => {
+      if (memberAnalyses.length > 0) {
+        setSelectedMember(memberAnalyses[0].member);
+      } else {
+        setSelectedMember(null);
       }
-    };
-  }, [memberAnalyses]); // Rerun when analyses load, so ref is available.
+    }, [memberAnalyses]);
 
-  if (isLoading) {
+    useEffect(() => {
+      const selectorElement = memberSelectorRef.current;
+      if (!selectorElement || memberAnalyses.length === 0) return;
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          // The header becomes "sticky" when the selector element is scrolled completely above the viewport.
+          setIsStickyActive(
+            !entry.isIntersecting && entry.boundingClientRect.bottom < 0
+          );
+        },
+        { threshold: [0, 1] }
+      );
+
+      observer.observe(selectorElement);
+
+      return () => {
+        if (selectorElement) {
+          observer.unobserve(selectorElement);
+        }
+      };
+    }, [memberAnalyses]); // Rerun when analyses load, so ref is available.
+
+    if (isLoading) {
+      return (
+        <div ref={ref} className="scroll-mt-4 text-center p-8">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-brand-primary mx-auto"></div>
+          <p className="mt-4 text-lg text-gray-400">{t('analyzing')}</p>
+        </div>
+      );
+    }
+
+    if (!analysisResult) return null;
+
+    if (analysisResult.errors && analysisResult.errors.length > 0) {
+      return (
+        <div ref={ref} className="scroll-mt-4 mt-8">
+          <Card className="border-red-500/50 bg-gray-900/50 animate-fade-in">
+            <h3 className="flex items-center justify-center gap-3 text-2xl font-bold text-red-400 mb-4">
+              <WarningIcon className="h-8 w-8" />
+              <span>{t('error.title')}</span>
+            </h3>
+            <div className="space-y-3 text-white text-sm sm:text-base leading-relaxed animate-fade-in">
+              {analysisResult.errors.map((error, i) => {
+                const message = translateAnalysisError(error, t);
+                return (
+                  <div
+                    key={i}
+                    className={`markdown-content ${language === 'fa' ? 'font-persian' : ''}`}
+                    dir={isRTL(message) ? 'rtl' : 'ltr'}
+                  >
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {message}
+                    </ReactMarkdown>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        </div>
+      );
+    }
+
+    if (!analysisResult.valid) {
+      return null;
+    }
+
     return (
-      <div className="text-center p-8">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-brand-primary mx-auto"></div>
-        <p className="mt-4 text-lg text-gray-400">{t('analyzing')}</p>
-      </div>
-    );
-  }
-
-  if (!analysisResult) return null;
-
-  if (analysisResult.errors && analysisResult.errors.length > 0) {
-    return (
-      <div className="mt-8">
-        <Card className="border-red-500/50 bg-gray-900/50 animate-fade-in">
-          <h3 className="flex items-center justify-center gap-3 text-2xl font-bold text-red-400 mb-4">
-            <WarningIcon className="h-8 w-8" />
-            <span>{t('error.title')}</span>
-          </h3>
-          <div className="space-y-3 text-white text-sm sm:text-base leading-relaxed animate-fade-in">
-            {analysisResult.errors.map((error, i) => {
-              const message = translateAnalysisError(error, t);
-              return (
-                <div
-                  key={i}
-                  className={`markdown-content ${language === 'fa' ? 'font-persian' : ''}`}
-                  dir={isRTL(message) ? 'rtl' : 'ltr'}
-                >
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {message}
-                  </ReactMarkdown>
-                </div>
-              );
-            })}
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
-  if (!analysisResult.valid) {
-    return null;
-  }
-
-  return (
-    <div className="space-y-8 mt-12">
-      <div
-        ref={memberSelectorRef}
-        className="flex flex-wrap justify-center gap-3 mb-8 animate-fade-in"
-      >
-        {memberAnalyses.map(analysis => (
-          <button
-            key={analysis.member}
-            onClick={() => setSelectedMember(analysis.member)}
-            className={`relative px-5 py-2.5 text-sm font-bold rounded-full transition-all duration-300 ease-in-out focus:outline-none
+      <div ref={ref} className="scroll-mt-4 space-y-8 mt-12">
+        <div
+          ref={memberSelectorRef}
+          className="flex flex-wrap justify-center gap-3 mb-8 animate-fade-in"
+        >
+          {memberAnalyses.map(analysis => (
+            <button
+              key={analysis.member}
+              onClick={() => setSelectedMember(analysis.member)}
+              className={`relative px-5 py-2.5 text-sm font-bold rounded-full transition-all duration-300 ease-in-out focus:outline-none
                             ${
                               selectedMember === analysis.member
                                 ? 'bg-brand-primary text-white shadow-lg shadow-brand-primary/40'
                                 : 'bg-gray-800/60 text-gray-300 hover:bg-gray-700/80 hover:text-white'
                             }`}
-          >
-            {getMemberName(analysis.member, t)}
-          </button>
-        ))}
-      </div>
+            >
+              {getMemberName(analysis.member, t)}
+            </button>
+          ))}
+        </div>
 
-      {memberAnalyses
-        .filter(
-          analysis => analysis.valid && analysis.member === selectedMember
-        )
-        .map(analysis => (
-          <MemberResultCard
-            key={analysis.member}
-            analysis={analysis}
-            family={family}
-            isStickyActive={isStickyActive}
-          />
-        ))}
-    </div>
-  );
-};
+        {memberAnalyses
+          .filter(
+            analysis => analysis.valid && analysis.member === selectedMember
+          )
+          .map(analysis => (
+            <MemberResultCard
+              key={analysis.member}
+              analysis={analysis}
+              family={family}
+              isStickyActive={isStickyActive}
+            />
+          ))}
+      </div>
+    );
+  }
+);
+
+ResultsDisplay.displayName = 'ResultsDisplay';
 
 export default ResultsDisplay;

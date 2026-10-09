@@ -25,6 +25,7 @@
 	"rhHelper": "فنوتیپ (مثلا +) یا ژنوتیپ (مثلا DD)",
 	"analyze": "تحلیل",
 	"analyzing": "در حال تحلیل...",
+	"loading": "در حال بارگذاری...",
 	"memberAnalysisTitle": "تحلیل {{member}}",
 	"howItWorks": {
 		"title": "چطور کار می‌کند؟",
