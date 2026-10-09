@@ -28,6 +28,7 @@
   "memberAnalysisTitle": "{{member}} Analysis",
   "howItWorks": {
     "title": "How It Works",
+    "showLess": "Show less",
     "step1": {
       "title": "1. Provide Inputs",
       "desc": "Enter the known blood types for the father, mother, and any children or if you don't know a person's blood type, you can leave it unknown to see probabilities. If you want the calculations for only one type of blood type (e.g., ABO only), leave the other blood type entries (i.e., RH) completely unknown; Use either phenotypes (like A+) or genotypes (like AO/Dd)."
@@ -94,17 +95,17 @@
         "onlyD": "- if only d"
       },
       "examples": {
-        "genoToPheno": "Genotype 'AO' → Phenotype 'A'\n(A is dominant over O)",
-        "rhInheritance": "Parents: Dd × Dd →\nChildren: DD, Dd, dd\n(25%, 50%, 25%)",
-        "dAlleleDominance": "Genotype 'Dd' → Phenotype '+'\n(D is dominant)",
-        "mendelianInheritance": "Parents: AO × BO →\nChildren:\n1/4 AB, 1/4 AO,\n1/4 BO, 1/4 OO",
-        "genoProbability": "From 100 combinations:\n25 AA, 50 AO, 25 OO →\nP(AA) = 25/100 = 0.25",
-        "phenoProbability": "P(A) = P(AA) + P(AO)\n= 0.25 + 0.50 = 0.75",
-        "normalization": "Raw: {AA:0.3, AO:0.6, OO:0.2}\nSum=1.1 →\nNormalized: {AA:0.27, ...}",
-        "hybridProbability": "P(A+) = P(A) × P(+)\n= 0.40 × 0.85 = 0.34",
-        "comboValidity": "Parents AA × BB\ncannot produce Child O\n→ Invalid",
-        "transfusion": "Person is 60% A+, 40% A-\nCan receive from O- with\nP(Compatible) = 1.0",
-        "cartesian": "ABO={A,B,AB,O} × RH={+,-}\n= {A+,A-,B+,B-,AB+,AB-,O+,O-}"
+        "genoToPheno": "AO shows up as blood type A, because A is dominant over O.",
+        "rhInheritance": "Dd with Dd gives DD (25%), Dd (50%), and dd (25%).",
+        "dAlleleDominance": "Dd shows up as Rh+, because D is dominant.",
+        "mendelianInheritance": "AO with BO gives AB, A, B, and O, each with a 25% chance.",
+        "genoProbability": "25 AA results out of 100 combinations means the chance of AA is 0.25.",
+        "phenoProbability": "Chance of type A is the chance of AA plus the chance of AO: 0.25 + 0.50 = 0.75.",
+        "normalization": "Scores 0.30, 0.60, and 0.20 add up to 1.10, so they scale to about 0.27, 0.55, and 0.18.",
+        "hybridProbability": "Chance of A+ is the chance of A times the chance of Rh+: 0.40 × 0.85 = 0.34.",
+        "comboValidity": "Parents AA and BB cannot have an O child, so that case is rejected.",
+        "transfusion": "Someone who is A+ or A- can always receive O- blood.",
+        "cartesian": "Four ABO groups times two Rh factors gives eight blood types, from A+ to O-."
       }
     }
   },

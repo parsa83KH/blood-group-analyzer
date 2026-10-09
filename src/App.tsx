@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { Person, FamilyAnalysisResult, MemberAnalysisResult } from '@/types';
 import BloodInputForm from '@/components/BloodInputForm';
 import ResultsDisplay from '@/components/ResultsDisplay';
@@ -21,6 +21,7 @@ const App: React.FC = () => {
     const [memberAnalyses, setMemberAnalyses] = useState<MemberAnalysisResult[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showHowItWorks, setShowHowItWorks] = useState(false);
+    const howItWorksToggleRef = useRef<HTMLButtonElement>(null);
     const [analysisCompletionStatus, setAnalysisCompletionStatus] = useState<AnalysisCompletionStatus>('idle');
     const [resultKey, setResultKey] = useState(0);
 
@@ -115,6 +116,7 @@ const App: React.FC = () => {
                        <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 mt-6">
                            <LanguageSwitcher />
                            <button
+                               ref={howItWorksToggleRef}
                                onClick={() => setShowHowItWorks(prev => !prev)}
                                className="interactive-glow-border inline-flex items-center gap-2 text-gray-300 hover:text-white transition-all duration-300 font-semibold px-4 py-2 rounded-full bg-gray-800/50 border border-gray-700 hover:border-brand-accent hover:bg-brand-accent/20 hover:shadow-lg hover:shadow-brand-accent/20 transform hover:-translate-y-0.5"
                                aria-expanded={showHowItWorks}
@@ -131,7 +133,14 @@ const App: React.FC = () => {
 
                     {showHowItWorks && (
                         <AnimatedSection className="my-12">
-                            <HowItWorks />
+                            <HowItWorks
+                                onShowLess={() => {
+                                    setShowHowItWorks(false);
+                                    requestAnimationFrame(() => {
+                                        howItWorksToggleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    });
+                                }}
+                            />
                         </AnimatedSection>
                     )}
 

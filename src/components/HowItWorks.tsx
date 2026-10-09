@@ -4,7 +4,11 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { PencilSquareIcon, ArrowRightIcon, BloodBagIcon, CalculatorIcon } from './icons';
 import FormulaDisplay from './FormulaDisplay';
 
-const HowItWorks: React.FC = () => {
+interface HowItWorksProps {
+  onShowLess: () => void;
+}
+
+const HowItWorks: React.FC<HowItWorksProps> = ({ onShowLess }) => {
   const { t } = useLanguage();
 
   const Allele: React.FC<{ allele: string; delay: number }> = ({ allele, delay }) => (
@@ -115,6 +119,18 @@ const HowItWorks: React.FC = () => {
           </div>
       </div>
       <FormulaDisplay />
+      <div className="mt-8 flex justify-center">
+        <button
+          type="button"
+          onClick={onShowLess}
+          className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-base font-medium text-purple-300 no-underline transition-colors hover:text-purple-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
+            <path fillRule="evenodd" d="M9.47 6.47a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 1 1-1.06 1.06L10 8.06l-3.72 3.72a.75.75 0 0 1-1.06-1.06l4.25-4.25Z" clipRule="evenodd" />
+          </svg>
+          {t('howItWorks.showLess')}
+        </button>
+      </div>
     </Card>
   );
 };

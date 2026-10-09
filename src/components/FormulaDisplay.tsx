@@ -19,10 +19,10 @@ const FormulaDisplay: React.FC = () => {
         },
         {
             category: t('howItWorks.formulas.categories.dAlleleDominance'),
-            formula: <div className="flex items-center justify-center gap-x-1">
+            formula: <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
                 <span>RH =</span>
-                <span className="text-5xl font-thin -mt-1">{'{'}</span>
-                <div className="flex flex-col text-left text-sm">
+                <span className="text-3xl font-thin leading-none">{'{'}</span>
+                <div className="flex flex-col text-start text-sm leading-snug">
                     <span>{t('howItWorks.formulas.conditions.dPresent')}</span>
                     <span>{t('howItWorks.formulas.conditions.onlyD')}</span>
                 </div>
@@ -38,7 +38,7 @@ const FormulaDisplay: React.FC = () => {
         },
         {
             category: t('howItWorks.formulas.categories.genoProbability'),
-            formula: <div className="flex items-center justify-center">
+            formula: <div className="flex flex-wrap items-center justify-center gap-y-1">
                 <span>P({t('howItWorks.formulas.terms.genotype')}<sub>i</sub>) =&nbsp;</span>
                 <div className="flex flex-col text-center">
                     <span>{t('howItWorks.formulas.terms.count')}<sub>i</sub></span>
@@ -51,7 +51,7 @@ const FormulaDisplay: React.FC = () => {
         },
         {
             category: t('howItWorks.formulas.categories.phenoProbability'),
-            formula: <div className="flex items-center justify-center gap-x-2">
+            formula: <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
                 <span>P({t('howItWorks.formulas.terms.phenotype')}<sub>j</sub>) =</span>
                  <div className="flex flex-col text-center">
                     <span>&sum;</span>
@@ -64,7 +64,7 @@ const FormulaDisplay: React.FC = () => {
         },
         {
             category: t('howItWorks.formulas.categories.normalization'),
-            formula: <div className="flex items-center justify-center">
+            formula: <div className="flex flex-wrap items-center justify-center gap-y-1">
                 <span>P<sub>norm</sub>({t('howItWorks.formulas.terms.genotype')}<sub>i</sub>) =&nbsp;</span>
                 <div className="flex flex-col text-center">
                     <span>P({t('howItWorks.formulas.terms.genotype')}<sub>i</sub>)</span>
@@ -89,7 +89,7 @@ const FormulaDisplay: React.FC = () => {
         },
         {
             category: t('howItWorks.formulas.categories.transfusion'),
-            formula: <div className="flex items-center justify-center gap-x-2">
+            formula: <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
                  <span>P({t('howItWorks.formulas.terms.compatible')}) =</span>
                  <div className="flex flex-col text-center">
                     <span>&sum;</span>
@@ -110,40 +110,38 @@ const FormulaDisplay: React.FC = () => {
 
     return (
         <div className="mt-10 pt-8 border-t border-gray-700/50">
-            <div className="max-w-3xl mx-auto text-center">
-                 <h3 className="text-2xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-rose-500">{t('howItWorks.formulas.title')}</h3>
+            <div className="max-w-3xl mx-auto text-center mb-6">
+                 <h3 className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-rose-500">{t('howItWorks.formulas.title')}</h3>
             </div>
-           
-            <div className="overflow-x-auto bg-gray-900/40 p-4 rounded-lg border border-gray-700/50">
-                <table className="min-w-full text-sm">
-                    <thead className="border-b border-gray-600">
-                        <tr className="text-left">
-                            <th className="p-3 font-semibold text-gray-300 uppercase tracking-wider">{t('howItWorks.formulas.categoryHeader')}</th>
-                            <th className="p-3 font-semibold text-gray-300 uppercase tracking-wider text-center">{t('howItWorks.formulas.formulaHeader')}</th>
-                            <th className="p-3 font-semibold text-gray-300 uppercase tracking-wider">{t('howItWorks.formulas.exampleHeader')}</th>
-                        </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-700/50">
-                        {formulasData.map(({ category, formula, example }, index) => {
-                            return (
-                                <tr key={index} className="group hover:bg-brand-primary/5 transition-colors duration-200" style={{ animation: `fadeInUp 0.5s ease-out ${index * 0.05}s forwards` }}>
-                                    <td className="p-3 align-top">
-                                        <span className="font-bold text-gray-300">{category}</span>
-                                    </td>
-                                    <td className="p-3 align-top h-full relative">
-                                        <div className="flex items-center justify-center h-full text-center min-h-[6rem]">
-                                            <code className="text-base text-rose-300 font-mono" dir="ltr">{formula}</code>
-                                        </div>
-                                    </td>
-                                    <td className="p-3 align-top">
-                                        <pre className="text-xs text-gray-400 font-mono whitespace-pre-wrap leading-relaxed">{example}</pre>
-                                    </td>
-                                </tr>
-                            );
-                        })}
-                    </tbody>
-                </table>
-            </div>
+
+            <ol className="space-y-4">
+                {formulasData.map(({ category, formula, example }, index) => (
+                    <li
+                        key={category}
+                        className="rounded-xl border border-gray-700/50 bg-gray-900/40 overflow-hidden"
+                        style={{ animation: `fadeInUp 0.5s ease-out ${index * 0.05}s forwards` }}
+                    >
+                        <div className="px-4 py-3 sm:px-5 border-b border-gray-700/50">
+                            <p className="text-[11px] uppercase tracking-wider text-gray-500">{t('howItWorks.formulas.categoryHeader')}</p>
+                            <h4 className="mt-1 text-base font-semibold text-gray-100">{category}</h4>
+                        </div>
+
+                        <div className="border-b border-gray-700/40 bg-black/25 px-4 py-4 sm:px-5">
+                            <p className="text-[11px] uppercase tracking-wider text-gray-500">{t('howItWorks.formulas.formulaHeader')}</p>
+                            <div className="mt-2 overflow-x-auto">
+                                <div dir="ltr" className="mx-auto max-w-full py-1 text-center font-mono text-sm sm:text-base text-rose-200 leading-relaxed">
+                                    {formula}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="px-4 py-4 sm:px-5">
+                            <p className="text-[11px] uppercase tracking-wider text-gray-500">{t('howItWorks.formulas.exampleHeader')}</p>
+                            <p className="mt-1.5 text-sm sm:text-base text-gray-100 leading-relaxed">{example}</p>
+                        </div>
+                    </li>
+                ))}
+            </ol>
         </div>
     );
 };
